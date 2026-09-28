@@ -9,7 +9,7 @@ Buildable Android port of Fade 1.09, with English game text and original or HD a
 - **Original:** original graphics, bitmap fonts, and sounds.
 - **HD:** 838 images at 4× resolution, outline fonts, and 109 enhanced sounds.
 
-Both require Android 7.0+ and support arm64-v8a and x86_64. They share the app ID and signing key: install one over the other to switch editions and preserve saves. Uninstalling or clearing app data removes saves.
+Both use native adaptive launcher icons on Android 8+ and circular fallback icons on Android 7. Both require Android 7.0+ and support arm64-v8a and x86_64. They share the app ID and signing key: install one over the other to switch editions and preserve saves. Uninstalling or clearing app data removes saves.
 
 ## Build
 
