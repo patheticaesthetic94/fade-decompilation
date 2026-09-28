@@ -1,22 +1,46 @@
-# Fade for Android and the web
+<p align="center">
+  <img src="web/fade-icon.png" alt="Fade Decompiled" width="120">
+</p>
 
-Buildable Android port of Fade 1.09, with English game text and original or HD assets.
+<h1 align="center">Fade Decompiled</h1>
 
-## Play in your browser
+<p align="center">
+  Complete decompilation and native Android and Web port of the game Fade (version 1.09) originally and only released for PocketPC. Developed by Fade Team in 2001, this game was previously unable to be played by any modern device without running a virtual machine and legacy software.
+</p>
 
-[Play Original or HD](https://patheticaesthetic94.github.io/fade-decompilation/).
-Click or tap to play; saves are kept in your browser and shared between editions.
-HD includes 4× artwork, outline fonts, and enhanced sounds. Its download is about
-411 MiB; Original is about 12 MiB. See [browser build and Pages instructions](port/WEB.md).
+<p align="center">
+  <a href="https://patheticaesthetic94.github.io/fade-decompilation/"><b>▶ Play in your browser</b></a>
+   · 
+  <a href="https://github.com/patheticaesthetic94/fade-decompilation/releases"><b>⬇ Download the latest Android release</b></a>
+   · 
+  <a href="https://www.reddit.com/r/1112byAghartaStudio/"><b>💬 Join the 1112 Reddit</b></a>
+</p> 
 
-## Downloads
+## Quick start
 
-[Android releases](https://github.com/patheticaesthetic94/fade-decompilation/releases/latest) provide two signed APKs:
+- [Play the Original or HD on web](https://patheticaesthetic94.github.io/fade-decompilation/) - A port of the game for modern browsers which runs the original and HD versions of the game. Saves are kept in your browser and shared between editions, but can also be exported.
 
-- **Original:** original graphics, bitmap fonts, and sounds.
-- **HD:** 838 images at 4× resolution, outline fonts, and 109 enhanced sounds.
+- [Android releases](https://github.com/patheticaesthetic94/fade-decompilation/releases/latest) - Download either the original version of the game or the HD version of the game as separate APK files. Both require Android 7.0+ and support arm64-v8a and x86_64. They share the app ID and signing key: install one over the other to switch editions and preserve saves. Uninstalling or clearing app data removes saves.
 
-Both use native adaptive launcher icons on Android 8+ and circular fallback icons on Android 7. Both require Android 7.0+ and support arm64-v8a and x86_64. They share the app ID and signing key: install one over the other to switch editions and preserve saves. Uninstalling or clearing app data removes saves.
+## HD Remaster (Optional)
+
+Whilst the game can be enjoyed in it's original resolution using all of it's original assets, you could also choose to play with HD remastered assets:
+
+- All backgrounds, scenes, inventory items and UI elements have been AI upscaled using the High Fidelity model. 
+
+- All sound effects have been processed to be made clearer and higher resolution using AudioSR.
+
+- A brand new text rendering engine has been put in place to render text natively without relying on pre-baked bitmap images doing the work. This allows fonts to be altered if needed by the individual.
+
+
+
+## Features
+
+- **Completely decompiled** source code to preserve this game into the future by allowing anyone to recompile the game for any device in the future.
+
+- **Native** and pre-built for web and Android devices. This is not emulation or a virtual machine. This is the game running on device as though it was made for it.
+
+- **Removed loading** from the beginning of the game which on an emulator or real device could take minutes.
 
 ## Build
 
