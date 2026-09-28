@@ -1,0 +1,15 @@
+# Generated files and local machine state
+.DS_Store
+/build/
+/port/gen/
+/port/android/.gradle/
+/port/android/.cxx/
+/port/android/app/.cxx/
+/port/android/app/build/
+/port/android/build/
+/port/android/local.properties
+__pycache__/
+*.pyc
+*.jks
+*.keystore
+.env

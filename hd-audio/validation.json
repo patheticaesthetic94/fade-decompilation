@@ -1,0 +1,19 @@
+{
+  "valid": true,
+  "source_files": 109,
+  "generated_files": 109,
+  "sample_rate": 48000,
+  "subtype": "PCM_16",
+  "duration_seconds": 249.4829791666666,
+  "checks": [
+    "inventory",
+    "source hashes unchanged",
+    "output and preview hashes",
+    "duration",
+    "channels",
+    "sample rate",
+    "finite samples",
+    "no clipping"
+  ],
+  "errors": []
+}

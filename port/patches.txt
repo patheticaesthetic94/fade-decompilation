@@ -1,0 +1,82 @@
+# Literal per-function edits applied by tools/mkport.py to decomp/game.c before the C transforms.
+# Used where Ghidra can't model the code: structs passed by value split across r1-r3 and the stack.
+# The port passes a pointer to the caller's copy instead; the callee still destroys it, as in the original
+# (MSVC ARM: callee-destroyed by-value args; the callers never destroy their copy).
+#   @ Func          - old text        + new text        (a '-' without '+' deletes the whole line)
+
+@ Script_RunList
+- bVar2 = Script_Run(this,local_468.ops[0].op,local_468.ops[0]._4_4_,local_468.ops[0]._8_4_);
++ bVar2 = Script_Run(this,&local_468);
+- pbVar7 = abStack_8ac;
++ pbVar7 = pbVar3;  /* was: copy into the outgoing by-value arg area */
+
+@ Script_Run
+- undefined1 Script_Run(Game *this,int param_2,undefined4 param_3,int param_4)
++ undefined1 Script_Run(Game *this,ScriptOpList *ops)
+- iStack_c = param_2;
+- uStack_8 = param_3;
+- iStack_4 = param_4;
+- (ScriptOpList *)&iStack_c
++ ops
+- &stack0x00000608
++ ((undefined1 *)auStack_88c8 + 0x8ed0)
+- &stack0x00000668
++ ((undefined1 *)auStack_8868 + 0x8ed0)
+- &stack0x00000728
++ ((undefined1 *)auStack_87a8 + 0x8ed0)
+- &stack0x000006c8
++ ((undefined1 *)auStack_8808 + 0x8ed0)
+
+@ TextList_SetDialogReply
+- void TextList_SetDialogReply(TextList *this,wchar_t *param_2,int param_3,undefined4 param_4)
++ void TextList_SetDialogReply(TextList *this,Rec44 *rec,char in_stack_00000038,FontGlyphs *hiFont,int in_stack_00000040)
+- char in_stack_00000038;
+- int in_stack_00000040;
+- CStack_c.str = param_2;
+- iStack_8 = param_3;
+- uStack_4 = param_4;
+- (CString *)(&stack0x00000000 + in_stack_00000038 * 0xc)
++ &rec->replies[in_stack_00000038].text
+- Rec44_Dtor((Rec44 *)&CStack_c);
++ Rec44_Dtor(rec);
+
+@ Game_DialogOnTap
+- TextList_SetDialogReply(&this->desc,local_188,local_184,local_180);
++ TextList_SetDialogReply(&this->desc,(Rec44 *)&local_188,bVar2,this->hiFont,(int)this->titleFont);
+- puVar12 = &stack0xfffffe24;
++ puVar12 = puVar8;  /* was: copy into the outgoing by-value arg area */
+
+@ TextList_CalcLinesPerPage
+- TextList_CalcLinesPerPage(TextList *this,undefined4 param_2,ushort *param_3,Screen *param_4)
++ TextList_CalcLinesPerPage(TextList *this,FontGlyphs *font)
+- uStack_c = param_2;
+- puStack_8 = param_3;
+- pSStack_4 = param_4;
+- (int)&uStack_c
++ (int)font
+- FontGlyphs_Dtor((FontGlyphs *)&uStack_c);
+
+@ TextList_Init
+- bVar2 = TextList_CalcLinesPerPage(this,uVar5,puVar6,pSVar7);
++ bVar2 = TextList_CalcLinesPerPage(this,pFVar3);
+- pbVar10 = &stack0xffffeff4;
++ pbVar10 = pbVar4;  /* was: copy into the outgoing by-value arg area */
+
+@ TextList_SetFont
+- bVar2 = TextList_CalcLinesPerPage(this,uVar4,puVar5,pSVar6);
++ bVar2 = TextList_CalcLinesPerPage(this,param_2);
+
+@ LoadGameResources
+- Screen_DrawDirect(&g_screen,0xf0U - g_progressBar.w >> 1,0x140U - g_progressBar.h >> 1,
++ if (0) Screen_DrawDirect(&g_screen,0xf0U - g_progressBar.w >> 1,0x140U - g_progressBar.h >> 1,
+- Screen_FadeToWhite(&g_screen,0,0,0xf0,0x140,'\x01');
+- Screen_FadeFromWhite(&g_screen,0,0,0xf0,0x140,'\x04','\x01');
+
+# Native font layouts use full line indices. Choices themselves remain byte IDs.
+@ Game_DialogChoiceAtLine
+- uint Game_DialogChoiceAtLine(Game *this,byte param_2)
++ uint Game_DialogChoiceAtLine(Game *this,int param_2)
+
+@ Game_DialogOnTap
+- Game_DialogChoiceAtLine(this,(byte)iVar5)
++ Game_DialogChoiceAtLine(this,iVar5)

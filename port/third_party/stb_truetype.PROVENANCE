@@ -1,0 +1,8 @@
+Library: stb_truetype 1.26
+Repository: https://github.com/nothings/stb
+Revision: 2c980bb59875b0d32144a71867fbdebb2f77cd20
+Source: https://raw.githubusercontent.com/nothings/stb/2c980bb59875b0d32144a71867fbdebb2f77cd20/stb_truetype.h
+SHA-256: ecd30b05e0dd4fea3a13c26810dd9e1992dc379049482c393d5a19e6b5090aab
+Licence: MIT/public-domain dual licence, full notices at end of header.
+Only trusted, bundled fonts are loaded. This rasterizer is for this English
+engine; complex-script shaping and font-file imports are not supported.

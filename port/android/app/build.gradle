@@ -1,0 +1,41 @@
+// Fade for Android. Java glue is SDL2's (build/third_party), native code is port/CMakeLists.txt,
+// assets (the game data) are staged into build/android-assets by tools/android_build.sh.
+plugins { id 'com.android.application' }
+
+def root = file('../../..')
+def sdl = new File(root, 'build/third_party/SDL2-2.32.10')
+
+android {
+    namespace 'org.fadeport.fade'
+    compileSdk 35
+    ndkVersion '29.0.14206865'
+    defaultConfig {
+        applicationId 'org.fadeport.fade'
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName '1.09'
+        externalNativeBuild { cmake { arguments '-DANDROID_STL=c++_static' } }
+        ndk { abiFilters 'arm64-v8a', 'x86_64' }
+    }
+    externalNativeBuild { cmake { path file('../../CMakeLists.txt'); version '3.22.1+' } }
+    sourceSets.main {
+        java.srcDirs = ['src/main/java', new File(sdl, 'android-project/app/src/main/java')]
+        assets.srcDirs = [new File(root, 'build/android-assets')]
+    }
+    androidResources { noCompress += ['fad', 'ifj', 'ifb', 'ifv', 'ifg', 'exe', 'txt'] }
+    signingConfigs {
+        release {
+            def keyPath = System.getenv('FADE_RELEASE_KEYSTORE')
+            def passwordPath = System.getenv('FADE_RELEASE_PASSWORD_FILE')
+            if (keyPath && passwordPath) {
+                storeFile file(keyPath)
+                storePassword file(passwordPath).text.trim()
+                keyAlias System.getenv('FADE_RELEASE_KEY_ALIAS') ?: 'fade-release'
+                keyPassword storePassword
+            }
+        }
+    }
+    buildTypes { release { minifyEnabled false; signingConfig signingConfigs.release } }
+    lint { abortOnError false }
+}

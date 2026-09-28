@@ -1,0 +1,12 @@
+-xc
+-std=gnu11
+-fms-extensions
+-Iinclude
+-Isrc
+-Ithird_party
+-I/opt/homebrew/include/SDL2
+-D_THREAD_SAFE
+-Wno-int-conversion
+-Wno-incompatible-pointer-types
+-Wno-deprecated-non-prototype
+-fsigned-char

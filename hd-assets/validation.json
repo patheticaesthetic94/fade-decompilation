@@ -1,0 +1,20 @@
+{
+  "validated_at": "2026-09-28T14:42:22.727063+00:00",
+  "valid": true,
+  "scale": 4,
+  "source_entries": 844,
+  "generated_files": 838,
+  "methods": {
+    "skip": 6,
+    "ai": 837,
+    "nearest": 1
+  },
+  "statuses": {
+    "skipped": 6,
+    "complete": 838
+  },
+  "png_bytes": 396152465,
+  "decoded_rgba_bytes": 1525346944,
+  "renderer_integrated": false,
+  "errors": []
+}
