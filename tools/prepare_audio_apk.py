@@ -22,10 +22,13 @@ def main():
     if not pack.is_absolute():
         pack = ROOT / pack
     manifest = json.loads((pack / 'manifest.json').read_text())
-    sources = ROOT / 'assets/Sounds'
-    expected = {p.relative_to(sources).as_posix() for p in sources.rglob('*.wav')}
-    if not expected or set(manifest['assets']) != expected:
-        raise ValueError('Remastered audio manifest must cover the complete source inventory')
+    sources = ROOT / 'extracted/Sounds'
+    expected = set(manifest['assets'])
+    encoded = {mangle('Sounds/' + name) for name in expected}
+    originals = {p.relative_to(ROOT / 'extracted').as_posix()
+                 for p in sources.rglob('*') if p.is_file()}
+    if not expected or encoded != originals:
+        raise ValueError('Remastered audio manifest must cover the complete original inventory')
     generated = {p.relative_to(pack / 'Sounds').as_posix()
                  for p in (pack / 'Sounds').rglob('*.wav')}
     if generated != expected:
@@ -35,7 +38,7 @@ def main():
     # Validate the entire pack before replacing any staged sound.
     for name in sorted(expected):
         record = manifest['assets'][name]
-        source = sources / name
+        source = ROOT / 'extracted' / mangle('Sounds/' + name)
         output = pack / 'Sounds' / name
         target_rel = mangle('Sounds/' + name)
         target = stage / 'fade' / target_rel

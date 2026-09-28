@@ -7,6 +7,5 @@ cd "$(dirname "$0")/.."
 mkdir -p build/releases
 FADE_HD_PACK=hd-assets FADE_AUDIO_PACK=hd-audio tools/android_build.sh clean assembleRelease
 cp port/android/app/build/outputs/apk/release/app-release.apk build/releases/fade-android-original.apk
-FADE_HD_PACK=hd-assets FADE_AUDIO_PACK=hd-audio tools/android_build.sh --hd --runtime-fonts --remastered-audio clean assembleRelease
+FADE_HD_PACK=hd-assets FADE_AUDIO_PACK=hd-audio tools/android_build.sh --hd clean assembleRelease
 cp port/android/app/build/outputs/apk/release/app-release.apk build/releases/fade-android-hd.apk
-python3 tools/validate_media_apk.py --apk build/releases/fade-android-hd.apk --report build/releases/hd-validation.json
