@@ -1,6 +1,13 @@
-# Fade for Android
+# Fade for Android and the web
 
 Buildable Android port of Fade 1.09, with English game text and original or HD assets.
+
+## Play in your browser
+
+[Play Original or HD](https://patheticaesthetic94.github.io/fade-decompilation/).
+Click or tap to play; saves are kept in your browser and shared between editions.
+HD includes 4× artwork, outline fonts, and enhanced sounds. Its download is about
+411 MiB; Original is about 12 MiB. See [browser build and Pages instructions](port/WEB.md).
 
 ## Downloads
 

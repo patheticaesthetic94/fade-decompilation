@@ -25,6 +25,7 @@ extern int port_trace;             // verbose API logging: FADE_TRACE=1, or on A
 void port_present(int force);
 extern uint16_t *port_fb;          // 240x320 RGB565 GAPI framebuffer (arena)
 void port_pump(int wait_ms);       // SDL events -> Win32 message queue
+void port_delay(uint32_t ms);      // cooperative browser wait, SDL delay natively
 
 // win32.c
 void msg_post(uint32_t msg, uint32_t wp, uint32_t lp);

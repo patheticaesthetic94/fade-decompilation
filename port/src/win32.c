@@ -132,7 +132,7 @@ LRESULT DefWindowProcW(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 void Sleep(DWORD ms)
 {
     port_present(0);
-    SDL_Delay(ms);
+    port_delay(ms);
     port_pump(0);
 }
 
@@ -216,6 +216,6 @@ BOOL sndPlaySoundW(LPCWSTR name, UINT flags)
     snd_buf = cvt.buf; snd_len = (Uint32)cvt.len_cvt; snd_pos = 0; snd_loop = (flags & 8) != 0;   // SND_LOOP
     SDL_UnlockAudioDevice(audio_dev);
     if (!(flags & 1) && !snd_loop)   // synchronous unless SND_ASYNC
-        while (snd_pos < snd_len) { port_present(0); SDL_Delay(10); }
+        while (snd_pos < snd_len) { port_present(0); port_delay(10); }
     return 1;
 }

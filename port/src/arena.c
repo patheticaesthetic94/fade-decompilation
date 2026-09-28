@@ -2,7 +2,9 @@
 // below 4 GB so that the game's 32-bit pointers (clang __ptr32) and (int)ptr casts stay valid.
 #include "port.h"
 #include "hd.h"
+#ifndef __EMSCRIPTEN__
 #include "lowmem.h"
+#endif
 #include <sys/mman.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,17 +15,31 @@
 
 static void *map_at(uintptr_t addr, size_t size)
 {
+#ifdef __EMSCRIPTEN__
+    // The web linker reserves [0, 4 MiB) with --global-base=4194304.
+    // Original globals remain at their recovered addresses in linear memory.
+    if (addr != IMAGE_BASE || size > 0x400000u - IMAGE_BASE)
+        port_fatal("arena: image exceeds reserved web memory");
+    void *p = (void *)addr;
+    memset(p, 0, size);
+#else
     void *p = lowmem_try(addr, size);
     if (!p) port_fatal("arena: cannot map image (%#zx bytes at %#lx): %s",
                        size, (unsigned long)addr, strerror(errno));
+#endif
     return p;
 }
 
 static void *map_low(size_t size, const char *name)
 {
+#ifdef __EMSCRIPTEN__
+    void *p = calloc(1, size);
+    if (!p) port_fatal("arena: cannot allocate %s", name);
+#else
     void *p = lowmem_find(size);
     if (!p) port_fatal("arena: cannot reserve %s (%#zx bytes below 2 GB): %s",
                        name, size, strerror(errno));
+#endif
     port_log("arena: %s at %p (%#zx bytes)", name, p, size);
     return p;
 }

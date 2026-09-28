@@ -1,0 +1,60 @@
+name: Build and deploy browser games
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Prepare Original and HD assets
+        run: python3 tools/prepare_web_assets.py
+      - name: Install Emscripten
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git build/emsdk
+          build/emsdk/emsdk install 4.0.15
+          build/emsdk/emsdk activate 4.0.15
+      - name: Build Original and HD
+        run: |
+          source build/emsdk/emsdk_env.sh
+          tools/web_build.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install browser test dependencies
+        run: |
+          npm install --prefix build/web-test playwright@1.63.0
+          build/web-test/node_modules/.bin/playwright install --with-deps chromium
+      - name: Test games and persistent saves
+        env:
+          NODE_PATH: build/web-test/node_modules
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 --directory build/web > build/web-server.log 2>&1 &
+          node tools/tests/web.cjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

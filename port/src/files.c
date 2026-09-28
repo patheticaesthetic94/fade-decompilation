@@ -22,7 +22,12 @@ static int idx_cmp(const void *a, const void *b) { return strcmp(*(char *const *
 
 void files_init(void)
 {
+#ifdef __EMSCRIPTEN__
+    // Mounted and restored from IndexedDB by the site's preRun hook.
+    pref_dir = SDL_strdup("/saves/");
+#else
     pref_dir = SDL_GetPrefPath("FadeTeam", "Fade");
+#endif
     if (!pref_dir) pref_dir = SDL_strdup("./");
     size_t len;
     char *list = SDL_LoadFile(DATA_DIR "files.txt", &len);

@@ -7,6 +7,9 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
 #endif
@@ -71,8 +74,22 @@ static uint32_t lparam_xy(int x, int y)
     return (uint32_t)x | (uint32_t)y << 16;
 }
 
+void port_delay(uint32_t ms)
+{
+#ifdef __EMSCRIPTEN__
+    emscripten_sleep(ms);
+#else
+    SDL_Delay(ms);
+#endif
+}
+
 void port_pump(int wait_ms)
 {
+#ifdef __EMSCRIPTEN__
+    // Yield even for PeekMessage polling so animations and browser input run.
+    emscripten_sleep(wait_ms > 0 ? wait_ms : 1);
+    wait_ms = 0;
+#endif
     SDL_Event e;
     int got = wait_ms > 0 ? SDL_WaitEventTimeout(&e, wait_ms) : SDL_PollEvent(&e);
     while (got) {
@@ -169,6 +186,11 @@ int main(int argc, char **argv)
     SDL_SetHint(SDL_HINT_ORIENTATIONS, "Portrait");
     SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "1");
     SDL_SetHint(SDL_HINT_ANDROID_TRAP_BACK_BUTTON, "1");
+#ifdef __EMSCRIPTEN__
+    // Yield at the port's explicit waits. SDL's implicit yields in rendering
+    // and event polling otherwise suspend in the middle of each tiny blit.
+    SDL_SetHint(SDL_HINT_EMSCRIPTEN_ASYNCIFY, "0");
+#endif
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_TIMER) < 0) port_fatal("SDL_Init: %s", SDL_GetError());
 
     arena_init();
@@ -182,6 +204,11 @@ int main(int argc, char **argv)
     hd_init();
     text_init();
 
+#ifdef __EMSCRIPTEN__
+    // Asyncify preserves the recovered WinMain call stack across browser turns.
+    // wasm32's normal stack already has 32-bit addresses; no pthread is needed.
+    game_thread(NULL);
+#else
     pthread_attr_t at;
     int err = pthread_attr_init(&at);
     if (err) port_fatal("cannot initialize game thread: %s", strerror(err));
@@ -192,6 +219,7 @@ int main(int argc, char **argv)
     if (err) port_fatal("cannot start game thread: %s", strerror(err));
     pthread_attr_destroy(&at);
     pthread_join(th, NULL);
+#endif
     SDL_Quit();
     return 0;
 }

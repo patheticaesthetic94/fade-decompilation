@@ -9,7 +9,12 @@
 #include <stdbool.h>
 #include <string.h>
 
+#ifdef __EMSCRIPTEN__
+// wasm32 already uses the game's ILP32 pointer layout.
+#define _P32
+#else
 #define _P32 __ptr32 __uptr
+#endif
 
 typedef uint8_t byte, uchar, undefined1, undefined;
 typedef int8_t sbyte;
