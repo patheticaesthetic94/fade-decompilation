@@ -4,7 +4,7 @@ from pathlib import Path
 import sys
 
 site = Path(sys.argv[1] if len(sys.argv) > 1 else 'build/web')
-for name in ('index.html', 'play.html', 'site.css', 'player.js', '.nojekyll'):
+for name in ('index.html', 'play.html', 'site.css', 'player.js', 'walkthrough.html', 'walkthrough.md', '.nojekyll'):
     assert (site / name).is_file(), f'Missing {name}'
 for mode in ('normal', 'hd'):
     for suffix in ('js', 'wasm', 'data'):

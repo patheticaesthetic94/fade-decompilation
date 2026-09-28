@@ -7,6 +7,24 @@ const start = document.querySelector('#start');
 const progress = document.querySelector('#progress');
 const fullscreen = document.querySelector('#fullscreen');
 const backup = document.querySelector('#backup');
+const player = document.querySelector('.player');
+const walkthroughToggle = document.querySelector('#walkthrough-toggle');
+const walkthroughPanel = document.querySelector('#walkthrough-panel');
+const walkthroughGuide = document.querySelector('#walkthrough-guide');
+function showWalkthrough(show) {
+  walkthroughPanel.hidden = !show;
+  player.classList.toggle('walkthrough-open', show);
+  walkthroughToggle.setAttribute('aria-expanded', String(show));
+  if (show) {
+    // Keep the same iframe mounted when closing so reading position is retained.
+    if (!walkthroughGuide.hasAttribute('src')) walkthroughGuide.src = walkthroughGuide.dataset.src;
+    document.querySelector('#walkthrough-close').focus();
+  } else {
+    (game && overlay.hidden ? canvas : walkthroughToggle).focus();
+  }
+}
+walkthroughToggle.onclick = () => showWalkthrough(walkthroughPanel.hidden);
+document.querySelector('#walkthrough-close').onclick = () => showWalkthrough(false);
 let game;
 let failed = false;
 document.querySelector('#edition').textContent = `Fade · ${version === 'hd' ? 'HD' : 'Original'}`;
@@ -70,13 +88,13 @@ start.onclick = async () => {
     if (failed) return;
     overlay.hidden = true;
     progress.hidden = true;
-    fullscreen.disabled = !document.querySelector('#game-frame').requestFullscreen;
+    fullscreen.disabled = !player.requestFullscreen;
     backup.disabled = false;
     canvas.focus();
     game.callMain([]);
   } catch (err) { error(err.message || String(err)); }
 };
-fullscreen.onclick = () => document.querySelector('#game-frame').requestFullscreen().catch(err => {
+fullscreen.onclick = () => player.requestFullscreen().catch(err => {
   document.querySelector('#storage').textContent = `Fullscreen unavailable: ${err.message}`;
 });
 canvas.addEventListener('contextmenu', event => event.preventDefault());

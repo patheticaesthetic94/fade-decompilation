@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fade — step-by-step walkthrough</title><style>
+:root{color-scheme:light;--ink:#252b31;--muted:#5b6470;--accent:#315b66;--paper:#fff;--ground:#f2f1ed}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--ground);color:var(--ink);font:17px/1.7 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:920px;margin:38px auto;padding:48px 60px;background:var(--paper);border:1px solid #deddd7;border-radius:8px}h1{font-size:2.3rem;line-height:1.2;letter-spacing:-.04em;margin-top:0}h2{font-size:1.65rem;margin-top:2.6em;padding-top:20px;border-top:2px solid #dce5e5;scroll-margin-top:24px}h3{font-size:1.16rem;color:var(--accent);margin-top:1.9em}p{margin:1em 0}a{color:var(--accent);text-underline-offset:3px}li{padding-left:.3em;margin:.65em 0}li::marker{color:var(--accent);font-weight:700}strong{font-weight:650}table{width:100%;border-collapse:collapse;font-size:.93rem;margin:1.5em 0}th,td{text-align:left;vertical-align:top;padding:12px;border:1px solid #deddd7}th{background:#edf3f3}tr:nth-child(even){background:#fafaf7}code{font-size:.86em;background:#f0f2f2;padding:2px 5px;border-radius:3px}.toolbar{max-width:920px;margin:24px auto 0;padding:0 20px;display:flex;justify-content:space-between;gap:16px;font-size:14px;color:var(--muted)}footer{color:var(--muted);font-size:14px;margin:30px 0 0;border-top:1px solid #ddd;padding-top:18px}
+@media(max-width:680px){main{margin:12px;padding:25px 21px}body{font-size:16px}h1{font-size:1.9rem}table{font-size:.82rem}th,td{padding:7px}.toolbar{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{body{background:white;font-size:11pt;line-height:1.45}main{border:0;margin:0;max-width:none;padding:0}.toolbar,footer{display:none}h2,h3{break-after:avoid}li,tr{break-inside:avoid}a{color:inherit;text-decoration:none}h2{margin-top:1.6em}table{font-size:10pt}@page{margin:18mm}}
+</style></head><body><div class="toolbar"><span>Fade 1.09 · Complete story spoilers · Source-derived guide</span><a href="walkthrough.md">Markdown version</a></div><main><h1 id="fade-a-step-by-step-walkthrough">Fade: a step-by-step walkthrough</h1>
+<p>This guide follows the English <strong>Fade 1.09</strong> story from New Game to the credits. It was reconstructed from the recovered scene scripts, inventory scripts, and decompiled engine. It contains puzzle and story spoilers.</p>
+<p><strong>Verification:</strong> the actions and puzzle conditions below were checked against the recovered data and code. The entire route has not been played through on the Android port. If the port behaves differently, use the checkpoints below to identify the first step that did not happen.</p>
+<h2 id="how-to-play">How to play</h2>
+<ul>
+<li><strong>Tap an object</strong>, then choose an action from its popup. An action such as <strong>Inspect</strong> often opens a close-up containing more objects.</li>
+<li><strong>Use with</strong> means select an inventory item, choose that action, then tap the object in the scene. Open the close-up first when the target is inside one.</li>
+<li><strong>Combine with</strong> means choose that action on one inventory item, then select the other inventory item.</li>
+<li>The <strong>red chest</strong> opens inventory. The <strong>green book</strong> opens the journal. The <strong>bottom-left emblem</strong> opens the main menu.</li>
+<li>Use the <strong>up/down arrows beside the text</strong> to read further pages. The down arrow also advances many story scenes. At the opening, you must press it; waiting will not advance the story.</li>
+<li>Dialogue choices can continue below the visible text. Scroll before assuming an option is missing.</li>
+<li>Use the available room exits to move between locations. A doorway can also have an <strong>Open</strong>, <strong>Enter</strong>, or <strong>Go to</strong> action.</li>
+<li>Save at the start of each major part. There are three save slots; rotate them so you can return to an earlier checkpoint.</li>
+</ul>
+<p><strong>A useful habit:</strong> examine a clue and finish its text even when this guide already gives you the answer. Some puzzles track whether Louis has actually discovered it.</p>
+<h2 id="where-you-are-going">Where you are going</h2>
+<ol>
+<li><a href="#1-get-ready-and-meet-belleville">Get ready and meet Belleville</a>.</li>
+<li><a href="#2-return-from-paris">Return from Paris</a>.</li>
+<li><a href="#3-find-evidence-of-annes-disappearance">Find evidence of Anne's disappearance</a>.</li>
+<li><a href="#4-escape-the-asylum">Escape the asylum</a>.</li>
+<li><a href="#5-follow-annes-trail-in-paris">Follow Anne's trail in Paris</a>.</li>
+<li><a href="#6-complete-the-ritual">Complete the ritual</a>.</li>
+<li><a href="#7-solve-the-isle-of-the-dead">Solve the Isle of the Dead</a>.</li>
+<li><a href="#8-reach-the-ending">Reach the ending</a>.</li>
+</ol>
+<h2 id="1-get-ready-and-meet-belleville">1. Get ready and meet Belleville</h2>
+<h3 id="wake-up-and-find-the-pills">Wake up and find the pills</h3>
+<ol>
+<li>Start <strong>New Game</strong>. Read the bedroom introduction and use the down arrow to continue.</li>
+<li>In the conversation with Anne, choose the reply about wanting <strong>coffee before taking the pills</strong>. Continue into the daytime bedroom.</li>
+<li>Inspect the <strong>chair</strong> and search Anne's <strong>jeans</strong>. Take the <strong>train ticket</strong> from the pocket.</li>
+<li>You can inspect the bedroom <strong>table</strong>, but the notebook only contains work papers for now. Return to it after Félicienne's phone call below.</li>
+<li>Leave the bedroom. Inspect the corridor's <strong>table with the plant</strong> and take the <strong>safe key</strong>.</li>
+<li>Go through the lounge to the kitchen. Drink Louis's <strong>coffee</strong> if you have not already done so. When Anne is in the kitchen, talk to her about the pills and, when available, the <strong>safe's code and key</strong>. She points you toward your diary.</li>
+<li>Go to the <strong>bathroom</strong>. Open inventory and <strong>Examine My Diary</strong>, then <strong>Use with</strong> the bathroom <strong>mirror</strong>. Louis reads the backwards writing: <strong>1974</strong>.</li>
+<li>Return to the bedroom. Inspect the small <strong>picture of a village street</strong>, then <strong>Move</strong> it to reveal the safe.</li>
+<li>Choose <strong>Open</strong> on the safe with the key in your inventory and the diary clue discovered. You do not type 1974 into a keypad here; the game checks whether you learned the code and have the key.</li>
+<li>Take the <strong>pills</strong> from the open safe. Louis takes the day's dose automatically. There is no need to select Eat on the bottle.</li>
+</ol>
+<h3 id="help-anne-and-prepare-the-file">Help Anne and prepare the file</h3>
+<ol start="11">
+<li>Return to the corridor. When Anne calls from the bathroom about the blocked bath, agree to help her.</li>
+<li>Go to the <strong>toilet</strong> and take the <strong>plunger</strong>. This drops your <strong>car keys</strong> into the toilet bowl.</li>
+<li>Use the <strong>plunger</strong> on the corridor's <strong>bathroom door</strong>, where Anne is calling. This resolves the blocked-bath request.</li>
+<li>In the lounge, inspect the <strong>fireplace</strong> and take the <strong>poker</strong>.</li>
+<li>Return to the toilet and open the <strong>toilet-bowl close-up</strong>. Use the <strong>poker</strong> on the <strong>car keys</strong> to retrieve them.</li>
+<li>Answer the <strong>hall telephone</strong> when it rings. Tell Félicienne you have the file/photos and finish her reminder about the appointment. <strong>Now return to the bedroom table and Flip through the notebook</strong> to take the <strong>Antique picture</strong>. The completed phone call unlocks this action.</li>
+<li>Leave through the front door to the <strong>garden</strong>. Inspect and open the <strong>mailbox</strong>, then take the <strong>envelope</strong>.</li>
+<li>In inventory, <strong>Open</strong> the envelope to get the <strong>Incomplete file</strong>. <strong>Combine</strong> it with the <strong>Antique picture</strong> to make <strong>File complete</strong>.</li>
+<li>Enter the <strong>car</strong>. Adjust the rear-view mirror if desired, then choose <strong>Start</strong> on the dashboard. If Louis says something is missing, finish the file first.</li>
+<li>Accept Anne's request to ride with you. Continue the conversation until you arrive in the village.</li>
+</ol>
+<h3 id="meet-your-customer">Meet your customer</h3>
+<ol start="21">
+<li>Enter the <strong>antiques shop</strong>. A stranger interrupts you outside. End that conversation with the reply telling him to leave or you will call the police, then enter the shop.</li>
+<li>Talk to <strong>Félicienne</strong>, who is balancing precariously above the floor. Agree to fetch something to help her.</li>
+<li>First visit the <strong>office</strong>, inspect the <strong>electric box</strong>, <strong>Open</strong> it, and <strong>Switch on</strong> the breaker. This lights the back room. Go to the <strong>back room</strong>, take the <strong>ladder</strong>, return to Félicienne, and <strong>Use with</strong> her. Despite the dialogue mentioning a stool, the required item is the ladder.</li>
+<li>Félicienne now talks at length. Go into the <strong>office</strong>, open the <strong>desk drawer</strong>, and take the <strong>cigarettes</strong>. If the room is too dark, inspect the <strong>electric box</strong>, open it, and switch the power on.</li>
+<li>Return to Félicienne and choose <strong>Smoke</strong>, or use the cigarettes' <strong>Smoke</strong> action. The smell makes her leave.</li>
+<li>Go back to the office and choose <strong>Work</strong> on the desk. Finish the interruption about Belleville's arrival.</li>
+<li>Talk to <strong>Belleville</strong> in the shop and invite him into the office. Accept hearing about his urgent task. The story moves to Paris.</li>
+</ol>
+<p><strong>Checkpoint:</strong> you wake in room 315 at the Hôtel des Lilas.</p>
+<h2 id="2-return-from-paris">2. Return from Paris</h2>
+<h3 id="get-your-wallet-coffee-and-pills">Get your wallet, coffee, and pills</h3>
+<ol>
+<li>Answer the <strong>hotel-room phone</strong> and finish the wake-up conversation.</li>
+<li>Choose <strong>Dress</strong> on the <strong>bed</strong>, then leave the room and go to the <strong>café across the street</strong>.</li>
+<li>Choose <strong>Order</strong> on a café <strong>table</strong>. Louis realizes that his wallet is missing. This makes searching the hotel bed useful.</li>
+<li>Return to the hotel. Take the <strong>Room315 key</strong> from the <strong>key shelf at reception</strong> when available.</li>
+<li>If the maid blocks your return upstairs, talk to the nervous café customer about his relationship, admit that Anne proposed to you, and encourage him to go and see his girlfriend. This clears the maid obstruction.</li>
+<li>At the room door, use the <strong>Room315 key</strong> if the door is locked, then enter.</li>
+<li><strong>Search</strong> the <strong>bed</strong> and take the <strong>wallet</strong>.</li>
+<li>Return to the café and <strong>Order</strong> again. Louis has his coffee and remembers the pills in the hotel bathroom.</li>
+<li>Go back upstairs into the <strong>hotel bathroom</strong> and <strong>Take</strong> the <strong>pills</strong>. Louis takes a dose automatically.</li>
+<li>Talk to the café customer who can tell you about transport. Ask about a taxi, then the <strong>nearest metro station</strong>. This opens the way to the station.</li>
+</ol>
+<h3 id="buy-a-ticket">Buy a ticket</h3>
+<ol start="11">
+<li>At the station, go to <strong>ticket desk 3</strong>. Ask for a ticket to <strong>Robertville sur Angeais</strong>, then finish the reply about being sent to another desk.</li>
+<li>Go to <strong>desk 6</strong>, ask to join the waiting list, and continue until the clerk sends you to desk 8.</li>
+<li>At <strong>desk 8</strong>, say you want to get to Robertville sur Angeais. When asked about a discount card, choose the reply saying you have a <strong>slight disability but forgot the card</strong>. This gives you the ticket. Saying simply No sends you back around the desks.</li>
+<li><strong>Board</strong> the train. In the carriage hall, open the compartment door.</li>
+<li>Talk to the <strong>young woman</strong>. Continue until she asks for a cigarette and the inspector approaches. Follow the conversation about the missing ticket and hiding in the toilet.</li>
+<li>Advance the train-toilet text. Louis loses consciousness and wakes in Jean's bathroom.</li>
+</ol>
+<p><strong>Checkpoint:</strong> you are back in St Jeoire, but Anne is missing.</p>
+<h2 id="3-find-evidence-of-annes-disappearance">3. Find evidence of Anne's disappearance</h2>
+<h3 id="restore-electricity-at-home">Restore electricity at home</h3>
+<ol>
+<li>Leave Jean's bathroom, talk to <strong>Jean</strong> in his living room, then leave his house for your own garden.</li>
+<li>Enter your house. The electricity is off. Go through the dark lounge and corridor to the <strong>bedroom</strong>.</li>
+<li>Inspect the <strong>alarm clock</strong> on the pedestal table. <strong>Open</strong> it and <strong>Take batteries</strong>.</li>
+<li>Inspect the other bedroom <strong>table</strong> and take the <strong>battery-powered lamp</strong>.</li>
+<li>In inventory, <strong>Combine Battery + Lamp</strong>.</li>
+<li>Return to the <strong>dark lounge</strong>. <strong>Use</strong> the assembled <strong>Lamp</strong> on the <strong>Wallpaper</strong>. This places it on a suitable surface and changes the room to its lit version.</li>
+<li>Inspect the <strong>fireplace</strong>. <strong>Move</strong> the hearth contents, then <strong>Take</strong> the shining object to obtain the <strong>Cellar key</strong>.</li>
+<li>Outside, approach the <strong>cellar door</strong>. Use the <strong>Cellar key</strong> on the closed door and enter the cellar stairs.</li>
+<li>Inspect the <strong>circuit breaker</strong>, choose <strong>Think</strong>, and take the <strong>burnt fuse</strong>. Thinking about the problem opens the visit to Jean for help.</li>
+<li>At <strong>Jean's front door</strong>, inspect the <strong>flower pot</strong> and take the hidden <strong>Jean's key</strong>. Use it on the door and enter.</li>
+<li>Visit the bedroom containing <strong>cigarette cartons</strong>. Inspect a carton and take a <strong>pack of cigarettes</strong>.</li>
+<li>In inventory, <strong>Open</strong> that pack to get <strong>Aluminium</strong>. <strong>Combine Aluminium + Fuse</strong> to make <strong>Repaired fuse</strong>.</li>
+<li>Return to your cellar stairs, open the breaker close-up, and <strong>Use Repaired fuse</strong> on the fuse position. <strong>Turn on</strong> the breaker.</li>
+</ol>
+<h3 id="collect-the-camera-and-repair-the-photo-lab">Collect the camera and repair the photo lab</h3>
+<ol start="14">
+<li>Go to the <strong>village centre</strong> and enter your <strong>ransacked antiques shop</strong>.</li>
+<li>In the <strong>back room</strong>, <strong>Shake</strong> Félicienne to get her attention. Finish her account of the burglary. She gives you your <strong>camera</strong>, containing the film she used to photograph the damage.</li>
+<li>In your <strong>office</strong>, inspect the <strong>handbag</strong> on the desk and take <strong>Trankill 2000</strong>.</li>
+<li>Go to the <strong>bar</strong> and talk to the <strong>bartender</strong>. Ask about <strong>Xavier</strong> to make the back alley accessible.</li>
+<li>In the bartender close-up, <strong>Use Trankill 2000</strong> on his <strong>beer</strong>. He falls asleep.</li>
+<li>Leave the bar and inspect the <strong>decorative lights</strong> outside. Take the <strong>red bulb</strong>. If you tried earlier and were told off, return now that the bartender is asleep.</li>
+<li>At home, enter the cellar and approach the <strong>photo lab</strong>. Try the <strong>safelight</strong> to discover the broken bulb, then <strong>Use the red Bulb</strong> on it. Turn it on and enter the working lab.</li>
+<li><strong>Open</strong> the camera in inventory. You receive <strong>Robbery film</strong> and the empty camera.</li>
+<li>In the working lab, <strong>Use Robbery film</strong> on the <strong>Tray</strong>. You receive <strong>three Picture evidence items</strong>. Keep all three, including the blurred photograph.</li>
+</ol>
+<h3 id="find-annes-recording-and-photograph-the-graffiti">Find Anne's recording and photograph the graffiti</h3>
+<ol start="23">
+<li>In the bar's <strong>back alley</strong>, inspect the <strong>garbage</strong> and take the <strong>crowbar</strong>.</li>
+<li>Visit <strong>Astrid</strong>, the clairvoyant: approach her door in the dark alley and use the <strong>door knocker</strong>.</li>
+<li>Tell her <strong>your wife has disappeared</strong>. Accept the card reading and finish all its pages. She gives you the <strong>Dairy key</strong>.</li>
+<li>At the village dairy, <strong>Use Dairy key</strong> on the door and enter.</li>
+<li>Inspect the <strong>cashbox</strong>, then <strong>Use Crowbar</strong> on its <strong>drawer</strong> in the close-up. Inspect the opened drawer and take <strong>Anne's tape recorder</strong>.</li>
+<li>Return to your house's <strong>hall</strong>. Listen to the phone's strange noise, then <strong>Use Tape recorder</strong> on the <strong>Phone</strong>. Louis records it. This adds an internal proof flag as well as updating the recorder's description.</li>
+<li>Go to the <strong>bus stop</strong>. Inspect the abandoned <strong>bag</strong>, then <strong>Search</strong> the camera inside it. Take the <strong>Empty film</strong>.</li>
+<li><strong>Combine Empty film + your empty Camera</strong>.</li>
+<li>At your garden <strong>mailbox</strong>, open its close-up and choose <strong>Take a picture</strong> on the graffiti.</li>
+<li>In your <strong>lounge</strong>, inspect the <strong>globe</strong> and choose <strong>Take picture</strong> on its <strong>symbol</strong>.</li>
+<li>Now <strong>Open</strong> the loaded camera in inventory. Louis removes the <strong>Roll of film</strong> containing both pictures. The game will not let you do this usefully until both pictures have been taken.</li>
+<li>In the working photo lab, <strong>Use Roll of film</strong> on the <strong>Tray</strong>. The mailbox and globe photographs become developed evidence.</li>
+<li>Go to the <strong>police station</strong> and <strong>Open</strong> its front door. Read through the conversation and the disturbing sequence that follows.</li>
+</ol>
+<p><strong>Police checkpoint:</strong> you need three developed burglary photographs, the developed mailbox photograph, the developed globe photograph, and the phone recording. Both exposed rolls must have been developed. Carrying an undeveloped roll blocks entry even if other evidence is present.</p>
+<h2 id="4-escape-the-asylum">4. Escape the asylum</h2>
+<h3 id="spend-the-first-night-and-meet-the-patients">Spend the first night and meet the patients</h3>
+<ol>
+<li>Finish the conversation with the singing stranger in the park, then explore toward the <strong>main building</strong>.</li>
+<li>Enter the building and go to <strong>reception</strong>. Ask where you are and insist that you want to leave. Zampano takes you to your cell.</li>
+<li>In <strong>My Cell</strong>, choose <strong>Sleep</strong> on the bed. Advance the night text until morning.</li>
+<li>Go to the <strong>refectory</strong> and talk to the patient with the conspicuous shoes, the one who distrusts the food. Continue until he asks to meet at the <strong>feeding mother</strong>: the she-wolf statue.</li>
+<li>After the meal, speak to him by the <strong>she-wolf statue</strong>. Ask about getting out and what he eats. You learn that he wants <strong>insects</strong> and that <strong>Parx</strong> has escaped before.</li>
+<li>Go to the <strong>infirmary</strong>. Tell the nurse <strong>you feel really sick</strong>. He gives you a sample container, named <strong>Bowl</strong> in inventory, and sends you back to the cell.</li>
+<li>In your cell, inspect all four places: <strong>wash basin, bucket, shelf, and floor</strong>. In each close-up, <strong>Take</strong> the <strong>bug</strong>. The first capture changes the container to a Bowl holding insects; the others are tracked separately.</li>
+<li>Return to the patient at the <strong>she-wolf statue</strong>. <strong>Use the insect-filled Bowl</strong> on him. You must have collected <strong>all four bugs</strong>. He gives you a <strong>Denture</strong>.</li>
+</ol>
+<h3 id="uncover-the-treasure-and-distract-zampano">Uncover the treasure and distract Zampano</h3>
+<ol start="9">
+<li>At the <strong>chapel entrance</strong>, talk to the other patient. Ask about his tricks and continue until he tells you about the hidden treasure and the poem, <strong>Panting stars crying with spleen</strong>.</li>
+<li>Visit the <strong>library</strong> and talk to the <strong>librarian</strong> about that phrase. Finish her explanation. This enables inspecting the treasure location.</li>
+<li>Before leaving the library, inspect the <strong>register</strong> and <strong>Read</strong> its page. The cook repeatedly borrows <strong>Terrestrial Feeds by Gides</strong>. Remember this for the kitchen.</li>
+<li>Return to the park's <strong>left path</strong>. Inspect the <strong>tree stump</strong> and <strong>Use Denture</strong> on the <strong>stones</strong> in the close-up. You find a <strong>Flask of white wine</strong> and a <strong>small key</strong>.</li>
+<li>In the <strong>chapel</strong>, talk to the <strong>priest</strong> and offer white wine. He says he wants <strong>kir</strong>, made with white wine and blackcurrant.</li>
+<li>Enter the <strong>kitchen</strong> from the refectory. Tell <strong>Mario</strong> someone is about to borrow <strong>Terrestrial Feeds</strong>. He leaves to protect his preferred book.</li>
+<li>Inspect the kitchen <strong>bottles</strong> and <strong>Use Flask</strong> on the <strong>blackcurrant bottle</strong>. You now have <strong>Kir</strong>.</li>
+<li>Return to the priest and choose the conversation offering him <strong>Kir</strong>. Continue the drinking conversation. He gives you a <strong>Bible</strong>.</li>
+<li>At the <strong>toolshed</strong>, <strong>Use Bible</strong> on the meditating patient. He exchanges his <strong>Playman magazine</strong> for it.</li>
+<li>At the <strong>front of the main building</strong>, <strong>Use Playman</strong> on <strong>Zampano</strong>. He leaves for the staff toilets, and you can speak properly to reception.</li>
+<li>Tell <strong>Gelsomina</strong> at reception you want to see the <strong>doctor</strong>. She leads you to him.</li>
+</ol>
+<h3 id="complete-the-doctors-two-tests">Complete the doctor's two tests</h3>
+<ol start="20">
+<li>Ask the doctor about the <strong>formalities for leaving</strong>. Complete the first five questions. Choose substantive answers rather than repeatedly asking for clarification.</li>
+<li>The first test <strong>always ends in failure</strong>. It unlocks information around the grounds, but there is no combination of replies that releases you.</li>
+<li>You can inspect the newly available clues if you wish: the fountain says <strong>1924</strong>, and the librarian identifies <strong>Antonio Guiseppe</strong> as the author. These are useful story clues, but the doctor offers deliberately unsuitable answers and changes the test on the next attempt.</li>
+<li>Return to the doctor and agree to take the <strong>second test</strong>. Answer all four questions. You will fail this one too and be taken back to your cell. That is the required progression.</li>
+<li><strong>Sleep</strong> on the bed. The next morning, return to the <strong>refectory</strong> and advance the choking-patient scene. This opens the next set of rooms and conversations.</li>
+</ol>
+<h3 id="prepare-parxs-fire">Prepare Parx's fire</h3>
+<ol start="25">
+<li>Upstairs, visit <strong>Parx in Cell 3</strong>. Ask him to help you escape. He wants the <strong>gardening hut/toolshed burned down</strong>.</li>
+<li>Distract the doctor in the morgue by provoking the two quarrelling patients: visit the patient in <strong>Cell 1</strong> and <strong>Salvatore in Cell 4</strong>, passing their insults back and forth.</li>
+<li>Start with Cell 1's message calling Salvatore a <strong>Terrone</strong>. Tell it to Salvatore, carry Salvatore's reply back to Cell 1, then continue carrying each new insult to the other man until both are threatening violence.</li>
+<li>At reception, talk to <strong>Zampano</strong> about the trouble upstairs. He tells you to ask the doctor in the <strong>autopsy room</strong>.</li>
+<li>Go to the <strong>morgue</strong>, tell the doctor the patients are fighting, and let him leave. Inspect the <strong>table</strong> and take the <strong>M-Oroid instant camera</strong>.</li>
+<li>Visit the <strong>laundry</strong> in the basement. Take the <strong>broom</strong>, then inspect the table and take the <strong>two clothespins</strong>.</li>
+<li>Upstairs, <strong>Use Broom</strong> on the <strong>attic trapdoor</strong> at the dead end of the third corridor. Enter the attic.</li>
+<li>Talk to the silent man if you wish, but the useful action is <strong>Search</strong> on the <strong>crate</strong> he points toward. Take the <strong>matches</strong>.</li>
+<li>Return to <strong>Gelsomina</strong> at reception and tell her about the <strong>man in the attic with a cloth over his head</strong>. Continue that conversation until Louis gives up trying to explain. It unlocks the next distraction.</li>
+<li>Go to the <strong>staff toilets</strong>. <strong>Talk to</strong> the occupied <strong>toilet door</strong> and tell Zampano that <strong>Gelsomina likes him</strong>. He leaves to see her.</li>
+<li>Enter the now accessible toilets and take the <strong>toilet paper</strong>.</li>
+<li>In the <strong>backroom off the lobby</strong>, <strong>Take</strong> a bottle from the <strong>crates</strong> to obtain <strong>White-spirit</strong>.</li>
+<li>Visit the gardening <strong>toolshed</strong> outside. Choose <strong>Photograph</strong> on the hut, or <strong>Use M-Oroid</strong> on it. You get a <strong>Picture</strong> of the intact shed.</li>
+<li><strong>Combine Picture + Clothespins</strong>.</li>
+<li>At the <strong>entrance gate</strong>, inspect the <strong>security camera</strong>. <strong>Use the Picture with clothespins</strong> on it. The camera now sees a photograph of the undamaged hut.</li>
+<li><strong>Combine White-spirit + Toilet paper</strong> to make a <strong>Cocktail</strong>. <strong>Combine Cocktail + Matches</strong> to make <strong>Burning cocktail</strong>.</li>
+<li>Return to the toolshed and <strong>Use Burning cocktail</strong> on the <strong>hut</strong>. If Louis mentions the camera, finish the photograph trick first.</li>
+<li>Choose <strong>Think</strong> on the burning toolshed to leave the scene.</li>
+<li>Return to <strong>Parx</strong> and talk to him. He tells you to hide in the laundry being sent to the village.</li>
+<li>In the <strong>laundry</strong>, choose <strong>Hide in</strong> on the table/pile of laundry. Advance the text.</li>
+</ol>
+<p><strong>This escape must fail.</strong> Parx betrays you. Continue through the guard, doctor, and cell scenes; you do not need to redo the fire.</p>
+<h3 id="find-the-underground-exit">Find the underground exit</h3>
+<ol start="45">
+<li>After the failed escape, finish the doctor's conversation and the scene showing writing covering your cell. You are placed in a <strong>high-security padded cell</strong>.</li>
+<li>Choose <strong>Call</strong> on the cell door <strong>three times</strong>, reading each response. On the third attempt you hear it unlock. Choose <strong>Open</strong> and leave.</li>
+<li>While the strange sound is playing, go to the empty <strong>reception</strong>. Inspect the <strong>table</strong>, then inspect its <strong>drawer</strong> and take the <strong>Envelope</strong>.</li>
+<li>In the same close-up, choose <strong>Turn off</strong> on the <strong>Tape Recorder</strong>. This stops the hospital sound and enables the normal clue actions. Do this before trying to read the fountain statues.</li>
+<li>Return upstairs to <strong>your original cell</strong>. <strong>Inspect</strong> the <strong>bed</strong> to recover the <strong>small key</strong> found with the wine; your inventory was cleared when you entered the padded cell.</li>
+<li>Visit the <strong>burned toolshed</strong> and <strong>Search</strong> its remains. Take the <strong>wrench</strong>.</li>
+<li>At the <strong>she-wolf statue</strong>, inspect the <strong>panel/lock</strong>. <strong>Use the small Key</strong> on the <strong>lock</strong>, then inspect the opened section. <strong>Use Wrench</strong> on the <strong>pipes/valve</strong>. The well drains.</li>
+<li><strong>Open</strong> the reception envelope to get a <strong>Sheet</strong>. <strong>Use Sheet</strong> on the <strong>embers/remains of the burned shed</strong>. The heat reveals a <strong>Letter</strong>. In inventory, <strong>Read</strong> it: the fourth sign is <strong>Cancer</strong>, and the signs must follow their zodiac order.</li>
+<li>At the <strong>fountain</strong>, inspect and <strong>Examine</strong> the three statues bearing signs. They reveal <strong>Libra</strong>, <strong>Leo</strong> (called <strong>Lion</strong> in the game), and <strong>Gemini</strong>. The fourth statue has no useful sign.</li>
+<li>Go to the <strong>well</strong>, inspect it, and <strong>Go down</strong> the drained shaft.</li>
+<li>Approach the bronze <strong>door</strong>. <strong>Push Gemini → Cancer → Lion/Leo → Libra</strong>, then <strong>Push the central button</strong>. Open each symbol's popup and select Push; merely reading it does not enter it.</li>
+<li>Follow the tunnel and the slope in the cave. Advance the ritual and sacrifice scenes until Louis wakes at home.</li>
+</ol>
+<p><strong>Checkpoint:</strong> the zodiac lock opens after those four signs and the central button. If you entered another sign, press the central button to clear the failed attempt, then retry.</p>
+<h2 id="5-follow-annes-trail-in-paris">5. Follow Anne's trail in Paris</h2>
+<h3 id="find-her-hidden-message">Find her hidden message</h3>
+<ol>
+<li>Leave the bedroom and answer the <strong>hall telephone</strong>. Identify yourself as Louis and finish the police message asking you to come to <strong>The Love Woods</strong>.</li>
+<li>Return to the bedroom, inspect the <strong>chair</strong>, and choose <strong>Wear it</strong> on the <strong>jeans</strong>. Louis takes his pills and changes clothes.</li>
+<li>Leave through the front door to the <strong>glade</strong>. <strong>Examine</strong> the body, then <strong>Turn</strong> it to see the face.</li>
+<li>Advance the funeral and gathering scenes. At the gathering, talk to <strong>Belleville</strong> and <strong>Félicienne</strong>, then talk to <strong>Jean</strong> when his second conversation becomes available.</li>
+<li>After the flashbacks, examine and turn the body again. Choose <strong>No, it's not her, I'm sure of it</strong> for the clearest account of Louis's discovery. All three identification replies continue to the same next scene.</li>
+<li>Back at home, go to the <strong>toilet</strong> and choose <strong>Fix</strong> on the <strong>flusher</strong>. Attempt to <strong>Open</strong> the water tank; Louis explains that he needs to turn off the water first.</li>
+<li>In the <strong>kitchen</strong>, choose <strong>Turn valves off</strong> on the cupboard/plumbing beneath the sink.</li>
+<li>Return to the toilet and <strong>Open</strong> the <strong>water tank</strong>. Take the <strong>Plastic bag</strong> of photographs.</li>
+<li>Advance the three photographs. They point to Louis's mother's apartment in Paris; the journey there follows automatically.</li>
+</ol>
+<h3 id="search-your-mothers-apartment">Search your mother's apartment</h3>
+<ol start="10">
+<li>Go into the <strong>bedroom</strong> and choose <strong>Sit on</strong> the <strong>bed</strong>. The grating sound enables <strong>Look under</strong>. Open that close-up and take the <strong>Key A.S.</strong> from the springs.</li>
+<li><strong>Open</strong> the <strong>armoire</strong>. Take the <strong>Coathanger</strong>; Louis also packs the clothes into <strong>Anne's Briefcase</strong>.</li>
+<li>In the <strong>bathroom</strong>, choose <strong>Refresh yourself</strong> at the <strong>wash basin</strong>. It does not drain.</li>
+<li><strong>Use Coathanger</strong> on that <strong>Wash basin</strong> to retrieve the <strong>music-box key</strong>. You also keep a bent coathanger for later use.</li>
+<li>In the <strong>foyer</strong>, inspect the <strong>music box</strong> and <strong>Use its Key</strong> on it. Take the <strong>Notebook</strong> from the opened box.</li>
+<li><strong>Read every available Notebook page</strong> in inventory: pages <strong>2, 5, 7, 10, and 12</strong>. This supplies names and enables the corresponding telephone choices.</li>
+<li>In the living room, <strong>Search</strong> the <strong>closet</strong>, then <strong>Take</strong> the bottle to get <strong>Trankill 6000</strong>.</li>
+<li>Use the foyer <strong>telephone</strong> to <strong>Call Montfort</strong>. Gisèle hangs up, but Louis can now visit her. The apartment exit becomes usable once you also have the <strong>Key A.S.</strong> and <strong>Trankill 6000</strong>.</li>
+</ol>
+<h3 id="get-inside-giseles-building">Get inside Gisèle's building</h3>
+<ol start="18">
+<li>At <strong>Gisèle's building</strong>, inspect the <strong>intercom</strong>. Read the names beside the buttons.</li>
+<li>Ring <strong>Gradoux twice</strong>. Her second response supplies information about Ramon and his other relationship.</li>
+<li>Ring <strong>Josephine Petipas twice</strong>. The second call reveals that Ramon drinks with the doctor.</li>
+<li>Ring <strong>Doctor Ali Kafour once</strong>, then again after hearing the neighbours' responses. Louis impersonates <strong>Ramon</strong>, and the doctor lets him in.</li>
+<li>In the conversation with <strong>Gisèle</strong>, choose the forceful third reply demanding that she listen. Finish her account of Anne's childhood, accident, and visits to the <strong>EXIT</strong> club.</li>
+</ol>
+<h3 id="arrange-a-visit-to-the-exit">Arrange a visit to the EXIT</h3>
+<ol start="23">
+<li>Outside the <strong>EXIT</strong>, talk politely to the <strong>streetsweeper</strong>: ask for information, then ask about the club's <strong>special features</strong>. You learn that entry requires a couple and suitable clothing.</li>
+<li>At the <strong>hotel reception</strong>, question the clerk about illegitimate couples, the couple with a red-haired/brunette woman and a ponytailed man, and whether they have visited recently. When asked whether you are an investigator, say <strong>Yes, something like that</strong>. Finish the conversation identifying <strong>Saint Arman</strong>. It opens the visit to Félicienne upstairs.</li>
+<li>In <strong>room 315</strong>, inspect the <strong>poster</strong> and read its handwritten clue. Its wording differs from the journal, so treat it as a story clue; the later keypad uses <strong>2319</strong>.</li>
+<li>Talk to <strong>Félicienne</strong> and invite her to dinner and a nightclub. When ready, choose <strong>OK, let's go</strong>.</li>
+<li>At dinner, explain that the nightclub is the kind that requires a couple. She refuses. Finish that refusal so <strong>Spill</strong> becomes available on the appropriate <strong>glass</strong>.</li>
+<li><strong>Spill</strong> the glass. She leaves to clean her dress.</li>
+<li>While she is away, <strong>Use Trankill 6000</strong> on her <strong>Trankill 2000 medication</strong> on the table. This replaces her usual medication; the target is the medication, rather than her drink.</li>
+<li>When she returns, ask whether she is still taking her <strong>medication</strong>, then suggest the nightclub again. She agrees.</li>
+<li>Outside the EXIT, the bouncer refuses your current clothes. In inventory, choose the newly available <strong>Wear</strong> action on <strong>Briefcase</strong> to put on the club clothes.</li>
+<li>Speak to the <strong>bouncer</strong> again. He admits you and Félicienne.</li>
+</ol>
+<h3 id="meet-christine-and-leave-the-club">Meet Christine and leave the club</h3>
+<ol start="33">
+<li>At the <strong>bar</strong>, talk to the <strong>man</strong> trying to attract Félicienne. Ask him to take your friend for a <strong>walk along the Seine</strong>. This occupies her.</li>
+<li>Take the <strong>Towels/Napkins</strong> from the bar.</li>
+<li>Visit the <strong>couches</strong> and talk to the <strong>man</strong> about dancing. Decline; he gives you his <strong>Glass</strong> of alcohol.</li>
+<li><strong>Combine Glass + Napkins</strong> to make alcohol-soaked napkins. You will need these to escape quietly.</li>
+<li>Talk to the woman on the couches who knows <strong>Christine</strong>. Ask where Christine is; after moving around the club, ask again until she says Christine is near the <strong>restrooms</strong>.</li>
+<li>Go to the <strong>restrooms</strong> and talk to <strong>Christine</strong> about Anne, then <strong>Saint Arman</strong>. Finish the scene announcing his arrival.</li>
+<li>Louis retreats into the bathroom. <strong>Unscrew</strong> the wash-basin <strong>pipes</strong>, then <strong>Take</strong> the loose <strong>PVC pipe</strong>.</li>
+<li>Approach the <strong>window</strong>. <strong>Use the alcohol-soaked Napkins</strong> on the <strong>window</strong>, then <strong>Use Pipe</strong> on the softened/covered window to break it quietly.</li>
+<li>Try <strong>Go through</strong> on the broken window. Louis refuses to leave in club clothes. The intended next action is changing back using <strong>Briefcase</strong>, then choosing <strong>Go through</strong> again, but the recovered scripts contain the progression issue described below.</li>
+</ol>
+<p><strong>Source inconsistency at the club:</strong> the recovered briefcase script removes the briefcase from inventory when you first dress for the club. The window escape later expects that same item to change back, and its refusal enables the first Wear action rather than the second action that unlocks the escape. No intervening script restores the briefcase. This looks like a progression bug in the recovered data; this guide cannot guarantee that step 41 works on the port. Keep a save before entering the club. The remaining chapters describe the recovered route after the escape; this point requires a data/port fix if your build reproduces it.</p>
+<h3 id="search-saint-armans-apartment">Search Saint Arman's apartment</h3>
+<ol start="42">
+<li>At Saint Arman's building, <strong>Open</strong> the door and enter the <strong>lift</strong>.</li>
+<li>Inspect and <strong>Open</strong> the <strong>toolbox</strong>, then <strong>Take</strong> its contents: <strong>Screwdriver</strong> and <strong>Hammer</strong>.</li>
+<li><strong>Use Key A.S.</strong> on the lift's <strong>lock</strong> and <strong>Turn</strong> it. The key sticks in the lock, but you can enter the apartment.</li>
+<li>In the <strong>entrance hall</strong>, inspect the <strong>statue</strong> and take its <strong>Lance/Spear</strong>.</li>
+<li>In the <strong>kitchen</strong>, inspect and open the <strong>cupboard</strong>. Take the <strong>Flour</strong>.</li>
+<li>In the <strong>bathroom</strong>, inspect the large <strong>mirror</strong>. <strong>Use Screwdriver</strong> on it. You obtain a <strong>Mirror</strong> and the <strong>Piece of paper</strong> bearing <strong>2319</strong>.</li>
+<li>In the <strong>lounge</strong>, inspect the window area and take the <strong>Musket</strong>. Inspect the <strong>wine glass</strong> on the table and note the fingerprints.</li>
+<li>Open the corridor door and <strong>Use Flour</strong> on the <strong>Sides</strong> of the corridor. The flour exposes the laser beams.</li>
+<li>Visit the <strong>bedroom</strong> from the corridor. Inspect the <strong>dressing table</strong> and take the <strong>Small mirror/Hand mirror</strong>.</li>
+<li>In the bloodstained room across the corridor, inspect the <strong>table</strong> and take the <strong>Roll of tape</strong>. Watch the camcorder tape if you want the story evidence.</li>
+<li><strong>Combine Mirror + Hand mirror</strong> to get <strong>Mirrors</strong>.</li>
+<li><strong>Combine Lance + Roll of tape</strong> to get the wrapped <strong>Lance</strong>. The roll remains available.</li>
+<li><strong>Combine wrapped Lance + Mirrors</strong> to make the lance carrying two mirrors.</li>
+<li>In the corridor showing the laser beams, <strong>Use the assembled Lance</strong> on the <strong>Sides</strong>. This bypasses the beams. Crawling or jumping is not a solution.</li>
+<li>Approach the far door and <strong>Open</strong> it to enter the <strong>office</strong>.</li>
+<li>Inspect the <strong>desk</strong>. <strong>Tear</strong> a blank page from the <strong>Notebook</strong>. <strong>Read</strong> the notebook to learn Belleville's address.</li>
+<li><strong>Inspect all four photographs</strong> on the desk. Each counts separately toward permission to leave through the secret passage. Do not skip a picture because you think you already understand it.</li>
+<li>In inventory, <strong>Open Musket</strong> while you have the <strong>Blank page</strong>. Louis uses the page to hold the <strong>Gunpowder</strong>.</li>
+<li>Return to the lounge's <strong>wine-glass close-up</strong>. <strong>Use Gunpowder</strong> on the glass to reveal its fingerprints.</li>
+<li>Choose <strong>Cut</strong> on the <strong>Roll of tape</strong>, then <strong>Use Piece of tape</strong> on the <strong>powdered glass</strong>. This produces tape bearing Saint Arman's fingerprint. The powder operation also supplies paper you will need later.</li>
+<li>Back in the <strong>office</strong>, inspect the <strong>bookcase's digital scanner</strong>. <strong>Use the fingerprint-bearing tape</strong> on the scanner. The bookcase opens a secret passage.</li>
+<li>Go through the opened passage and <strong>Climb down</strong> the ladder. If Louis says he forgot something, return to the desk, <strong>Read</strong> the notebook and <strong>Inspect all four photographs</strong>.</li>
+</ol>
+<h3 id="search-bellevilles-garage-and-collect-the-bank-papers">Search Belleville's garage and collect the bank papers</h3>
+<ol start="64">
+<li>Visit <strong>Belleville's house</strong> at the address found in the notebook. <strong>Break in</strong> at the <strong>garage door twice</strong>. The first attempt loosens it; the second opens it.</li>
+<li>At the <strong>back of the garage</strong>, inspect the <strong>cupboard/bottle</strong> and take the <strong>Acid</strong>.</li>
+<li>Inspect the <strong>Digicode</strong> and push <strong>2 → 3 → 1 → 9</strong>, then the <strong>bottom-middle confirmation button</strong>. This is the button described as validating the combination, not the hash or star button.</li>
+<li>The car trunk becomes available. <strong>Open</strong> it and <strong>Take</strong> the <strong>Painting</strong> and the <strong>Paper/notes</strong>.</li>
+<li><strong>Search Anne's shoes</strong> in the trunk. You find the <strong>Attorney paper</strong>, her bank authorisation.</li>
+<li>Back in the garage, <strong>Use the bent Coathanger</strong> on the <strong>car door</strong>. <strong>Open</strong> the car.</li>
+<li>Inside, <strong>Open</strong> the <strong>glove compartment</strong> and take the <strong>Note</strong> reporting on Anne.</li>
+<li>Leave the garage area after collecting <strong>Attorney paper</strong>, <strong>Note Belleville</strong>, and the <strong>Note from the glove compartment</strong>. Those three items are the actual departure check.</li>
+</ol>
+<p>The acid also opens the trunk if you use it on the trunk. The keypad route above uses the code and preserves that alternative.</p>
+<h3 id="open-annes-bank-box">Open Anne's bank box</h3>
+<ol start="72">
+<li>Continue the argument with Félicienne at your mother's apartment and the phone conversation with <strong>Alex</strong>. Ask <strong>where he lives</strong>. You travel to his apartment.</li>
+<li><strong>Open</strong> Alex's door. In the apartment, inspect the <strong>floor</strong> and <strong>Open</strong> the cigarette pack to get a <strong>Lighter</strong>.</li>
+<li>Inspect <strong>Alex's body</strong> and <strong>Search</strong> him to get a <strong>Key</strong>. Taking both items advances the story to the hotel and then the bank.</li>
+<li>At the <strong>bank</strong>, approach the banker. In the authorisation conversation, choose the reply asking whether you must return with your <strong>lawyer</strong>. He leads you to the vault.</li>
+<li><strong>Use Alex's Key</strong> on the bank box <strong>Lock</strong>, then take the <strong>Bible</strong> from the opened box.</li>
+<li>In inventory, <strong>Open</strong> the Bible. It contains an <strong>M-Oroid photo</strong>. <strong>Look at back</strong> on that photo to read the invitation, which takes you toward the EXIT.</li>
+</ol>
+<p><strong>Checkpoint:</strong> you have the bank Bible, Alex's lighter, the paper retained from the fingerprint work, and access to your mother's apartment.</p>
+<h2 id="6-complete-the-ritual">6. Complete the ritual</h2>
+<ol>
+<li>At the <strong>EXIT</strong>, knock. Tell the bouncer <strong>you know Saint Arman and your name is Louis Everett</strong>. He admits you.</li>
+<li>Talk to the cult member and ask to see <strong>Saint Arman</strong>. Follow the conversations down the stairs.</li>
+<li>In the crowd, ask the cult member to <strong>lead you to Saint Arman</strong>, then <strong>Go closer</strong> to Saint Arman at the altar.</li>
+<li>Ask Saint Arman <strong>all five main questions</strong>: Anne, Alex, the asylum ritual and Jean, Christine, and the tobacco. The game records each topic; the next scene waits until all five have been covered.</li>
+<li>Continue through Belleville's arrival and the fire. Choose <strong>Flee</strong> when that action appears on the cultists.</li>
+<li>In the burning altar scene, <strong>Talk to Saint Arman</strong>, then <strong>Take</strong> the <strong>Painting</strong> he tells you to use. You return to your mother's apartment.</li>
+<li><strong>Use Lighter</strong> on the room's <strong>Candles</strong>. This lights the room and changes the lighter's usable target to the braziers.</li>
+<li>In the bathroom, examine the <strong>bank Bible</strong> under the <strong>ultraviolet light</strong>. Its covered writing becomes readable here. Finish reading the ritual instructions.</li>
+<li>Inspect the <strong>plants in the bath</strong> and <strong>Pick</strong> some <strong>Tobacco</strong>. Lighting the living-room candles in step 7 enables picking; the Bible explains why you need it.</li>
+<li><strong>Combine Tobacco + Paper</strong> to make <strong>Incense</strong>. Use the paper from the earlier fingerprint work, not the keypad note.</li>
+<li>In the living room, <strong>Use the Painting taken from Saint Arman's altar</strong> on the <strong>Spot</strong> where the painting belongs.</li>
+<li><strong>Use Incense</strong> on the <strong>Brazier</strong>, then <strong>Use Lighter</strong> on the <strong>Brazier</strong> to light it.</li>
+<li>Advance the smoke, raid, and escape scenes. You arrive beside Astrid's boat.</li>
+</ol>
+<p><strong>Ritual checkpoint:</strong> the final ignition needs both the correctly placed painting and incense loaded into the braziers. The earlier painting taken from Belleville's trunk is a different inventory item and does not replace the altar painting for this check.</p>
+<h2 id="7-solve-the-isle-of-the-dead">7. Solve the Isle of the Dead</h2>
+<h3 id="arrive-and-collect-alexs-miniature">Arrive and collect Alex's miniature</h3>
+<ol>
+<li>Talk to <strong>Astrid</strong> by the boat. Finish her request for proof that your eyes are open.</li>
+<li><strong>Use Denarius</strong> on <strong>Astrid</strong>. The coin is added automatically when you arrive on the shore. <strong>Board</strong> the boat.</li>
+<li>Advance the journey's recap, then Astrid's farewell on the island.</li>
+<li><strong>Search the small boat</strong> and take the <strong>Boat hook</strong>. In inventory, choose <strong>separate</strong> to obtain <strong>Hook</strong> and <strong>Staff</strong>.</li>
+<li>Go up the landing steps and follow the path to the <strong>Fountain</strong>. From here, the right-hand path leads toward the house, the left-hand path to the temple, and the mountain steps to the astrolab.</li>
+<li>Climb the mountain steps to the <strong>Astrolab</strong>. Inspect the bowl containing a small statue and take the <strong>Alex statue</strong>. You can also reach it from the close-up by the central hole.</li>
+<li>Return to the fountain and take the route past the <strong>house</strong> toward the <strong>bridge</strong>. Follow the path to the rock entrance named <strong>Tartar</strong>, open its door, and enter the <strong>Amphitheater</strong>.</li>
+</ol>
+<h3 id="repair-alexs-memory-and-restart-the-fountain">Repair Alex's memory and restart the fountain</h3>
+<ol start="8">
+<li><strong>Examine Alex Statue</strong> in the amphitheater. <strong>Use the miniature Alex statue</strong> on the <strong>Pedestal</strong> beneath the full-size statue.</li>
+<li>In the memory of the village square, greet Alex as someone you <strong>remember</strong>, then invite him for a <strong>drink</strong>. Finish the bar conversation. This returns you to the island and opens Alex's box.</li>
+<li>Inspect the opened <strong>music box</strong> by Alex's statue and take the <strong>Spike Roll</strong>.</li>
+<li><strong>Examine the Empty Pedestal</strong> in the amphitheater. <strong>Use Spike Roll</strong> on its broken <strong>Music box</strong>. You hear water start moving.</li>
+<li>Return to the <strong>Fountain</strong>, inspect its now drained basin, and take the <strong>Christine statue</strong>.</li>
+<li>In the amphitheater, <strong>Examine Christine Statue</strong> and <strong>Use the miniature Christine statue</strong> on its <strong>Pedestal</strong>.</li>
+<li>In the train memory, <strong>Talk to Christine</strong>. Accept her offer of help with the ticket. She pays the inspector, and you return to her now-open box.</li>
+<li>Inspect Christine's opened <strong>music box</strong> and take the <strong>Babylon battery</strong>.</li>
+</ol>
+<h3 id="power-the-device-and-solve-the-temple-disks">Power the device and solve the temple disks</h3>
+<ol start="16">
+<li>Go to the <strong>house/villa</strong> off the fountain's right path. Enter and approach the <strong>Device</strong>.</li>
+<li>Inspect its <strong>Power source</strong> and <strong>Use Babylon battery</strong> on the <strong>Empty hole</strong>. The two indicator symbols light up, and the temple's central buttons become functional.</li>
+<li>Return to the fountain and take the left-hand path to the <strong>Temple</strong>. Inspect its entrance, <strong>Enter</strong>, and approach the central structure, called <strong>Heart</strong>.</li>
+<li>Inspect the disk under <strong>Isis</strong>. Choose <strong>Touch</strong> on the symbol <strong>directly left of the centre</strong>, at about <strong>9 o'clock</strong>. Leave the other five symbols untouched. Then <strong>Touch the central Button once</strong>.</li>
+<li>Inspect the disk under <strong>Mnemosis</strong>. Choose <strong>Touch</strong> on the symbol at the <strong>upper right</strong>, at about <strong>1–2 o'clock</strong>. Leave the other five symbols untouched. Then <strong>Touch the central Button once</strong>.</li>
+<li>The <strong>female sarcophagus</strong> opens. Inspect it and <strong>Search</strong> inside to take the <strong>Jean statue</strong>.</li>
+</ol>
+<p><strong>Disk reset:</strong> if you touched an extra symbol, press that disk's central button once to submit, then a second time to reset it. Repeat the correct single-symbol selection. The required state is one correct symbol submitted on each disk. The missing battery must already have been installed.</p>
+<h3 id="repair-jeans-memory-and-open-the-second-sarcophagus">Repair Jean's memory and open the second sarcophagus</h3>
+<ol start="22">
+<li>At the amphitheater, <strong>Examine Jean Statue</strong> and <strong>Use the miniature Jean statue</strong> on its <strong>Pedestal</strong>.</li>
+<li>In Jean's living-room memory, choose the reply saying your vision is blurry and asking <strong>Can I sleep here?</strong> Finish his answer. You return to the island.</li>
+<li>Take the <strong>Dagger</strong> from Jean's opened <strong>music box</strong>.</li>
+<li>Return to the temple's Heart room. Inspect the closed <strong>male sarcophagus</strong> and <strong>Use Dagger</strong> on it. The dagger breaks, but the sarcophagus opens.</li>
+<li><strong>Search</strong> inside and take the <strong>Doctor statue</strong>.</li>
+<li>In the amphitheater, <strong>Examine Doctor Statue</strong> and <strong>Use the miniature Doctor statue</strong> on its <strong>Pedestal</strong>.</li>
+<li>Complete the doctor's yes/no memory test. <strong>Either answer is accepted at each question</strong> in this version. Finish all six questions to return to his opened box.</li>
+<li>Take the <strong>Rope</strong> from the doctor's <strong>music box</strong>.</li>
+</ol>
+<h3 id="find-saint-armans-miniature-and-the-stone">Find Saint Arman's miniature and the stone</h3>
+<ol start="30">
+<li><strong>Combine Rope + Hook</strong> to make the <strong>Grapnel</strong>.</li>
+<li>From the <strong>bridge</strong>, follow the route to the <strong>Mountain</strong> with the high stone table. <strong>Use Grapnel</strong> on the <strong>Table</strong>, then <strong>Climb</strong> the rope/slope.</li>
+<li>Take the <strong>Oil Lamp</strong> from the table close-up.</li>
+<li>Return to the <strong>landing beach</strong>. Inspect the <strong>moss-covered dog statue</strong> and <strong>Use Oil Lamp</strong> on the <strong>Moss</strong>. The moss burns away.</li>
+<li>Inspect the cleared statue and <strong>Search</strong> the <strong>Hole</strong>. Take the <strong>St Arman statue</strong>.</li>
+<li>In the amphitheater, <strong>Examine St Arman Statue</strong> and <strong>Use the miniature St Arman statue</strong> on its <strong>Pedestal</strong>.</li>
+<li>In the memory of the EXIT fire, <strong>Talk to Saint Arman</strong>, then <strong>Take</strong> the <strong>Painting</strong>. This time Louis stays in the fire scene.</li>
+<li><strong>Use the Painting</strong> on the <strong>Flames</strong>. Advance the text about burning it, then return to Saint Arman's now-open island box.</li>
+<li>Take the <strong>Stone</strong>, the talisman with a piece missing, from Saint Arman's <strong>music box</strong>.</li>
+</ol>
+<h3 id="reach-anne-and-complete-the-talisman">Reach Anne and complete the talisman</h3>
+<ol start="39">
+<li>Return to the <strong>Astrolab</strong>. Inspect the large <strong>Belleville statue</strong> and <strong>Use Stone</strong> on the <strong>Spot in his hand</strong>.</li>
+<li>Approach the central <strong>Hole</strong>. An elevator is now accessible below its rim. Choose <strong>Jump</strong> to step into it and descend.</li>
+<li>Follow the <strong>gallery</strong> to the <strong>Lava lake</strong>, then <strong>Climb</strong> toward the figures on the ridge.</li>
+<li><strong>Talk to Belleville</strong> and complete his replies, especially the final one about the absurdity of the situation. Return to the ridge.</li>
+<li><strong>Talk to Anne</strong>, hear her replies, and finish the conversation about proving she did not betray you. Once you have visited both conversations, the confrontation advances.</li>
+<li>Advance the struggle and shooting. Talk to the wounded <strong>Anne</strong> and choose the reply offering to carry her to help. Promise to finish what she started.</li>
+<li>After her final words, <strong>Inspect Anne</strong>, then <strong>Take the Pendant</strong> from her hand in the close-up.</li>
+<li>Return through the gallery and elevator to the <strong>Astrolab</strong>.</li>
+<li>Inspect <strong>Belleville's statue</strong> again. <strong>Use Pendant</strong> on the <strong>Stone/Talisman already in his hand</strong>.</li>
+<li>Advance the lightning and memory scenes until Louis wakes beside the tubes.</li>
+</ol>
+<p><strong>Island reward checklist:</strong> Alex gives the Spike Roll; Christine the Babylon battery; Jean the Dagger; the Doctor the Rope; Saint Arman the Stone. Each box opens after placing its matching miniature and finishing that character's memory.</p>
+<h2 id="8-reach-the-ending">8. Reach the ending</h2>
+<ol>
+<li>In the <strong>tube room</strong>, <strong>Inspect the Screen by the door</strong>. This opens the controls close-up and records one discovery. Try Manipulate if you want its description; it is not the required extra puzzle.</li>
+<li>Back in the room, <strong>Inspect the other Screen</strong>, the one displaying the landscape. This records the second discovery.</li>
+<li><strong>Go to Anne's tube</strong>, then <strong>Inspect Anne</strong>. This records the third discovery. Return to the main room if the rescue scene does not start immediately.</li>
+<li>After those three discoveries, the door-opening/rescue sequence begins.</li>
+<li>Keep advancing the text with the <strong>down arrow</strong> through the doctors' explanation and the final conversation. These are story scenes, not a new escape puzzle.</li>
+<li>After Louis's final <strong>I HAVE TO WAKE UP!!!</strong>, the game runs its ending/credits event. You have finished Fade.</li>
+</ol>
+<h2 id="if-you-are-stuck">If you are stuck</h2>
+<table>
+<thead>
+<tr>
+<th>What happens</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Opening text will not move on</td>
+<td>Press the text panel's down arrow.</td>
+</tr>
+<tr>
+<td>A dialogue reply seems absent</td>
+<td>Scroll down through the remaining choices.</td>
+</tr>
+<tr>
+<td>Bedroom safe stays locked</td>
+<td>Examine the diary, use it on the bathroom mirror, and take the corridor plant's key.</td>
+</tr>
+<tr>
+<td>Car will not start</td>
+<td>Open the envelope and combine the incomplete file with the antique picture.</td>
+</tr>
+<tr>
+<td>Cannot find the hotel wallet</td>
+<td>First try ordering at the café, then search the hotel bed.</td>
+</tr>
+<tr>
+<td>Cannot enter Jean's house</td>
+<td>Think about the fuse at your cellar breaker, then inspect his flower pot for the key.</td>
+</tr>
+<tr>
+<td>Bartender prevents taking a bulb</td>
+<td>Use Trankill 2000 on his beer first.</td>
+</tr>
+<tr>
+<td>Police say evidence is missing</td>
+<td>Develop both films, keep all five photographs, and record the hall phone. Open the camera after taking both graffiti pictures.</td>
+</tr>
+<tr>
+<td>The doctor never passes you</td>
+<td>Complete both attempts. Their failures advance the story.</td>
+</tr>
+<tr>
+<td>Asylum upstairs rooms remain blocked</td>
+<td>Finish the second test, sleep, and attend the next refectory scene.</td>
+</tr>
+<tr>
+<td>Can't distract the morgue doctor</td>
+<td>Ask Parx about escape, pass insults between Cell 1 and Cell 4, speak to Zampano about the fight, then tell the doctor.</td>
+</tr>
+<tr>
+<td>Staff toilet conversation will not distract Zampano</td>
+<td>Use the broom to reach the attic, then finish telling Gelsomina about the silent man.</td>
+</tr>
+<tr>
+<td>The shed cannot be burned</td>
+<td>Photograph it, combine that photograph with clothespins, and put it over the gate camera.</td>
+</tr>
+<tr>
+<td>Cannot read the late asylum clues</td>
+<td>Turn off the tape recorder at the empty reception.</td>
+</tr>
+<tr>
+<td>Small key vanished after the padded cell</td>
+<td>Inspect the bed in your original cell.</td>
+</tr>
+<tr>
+<td>Zodiac door will not open</td>
+<td>Submit/reset a failed attempt; push Gemini, Cancer, Lion, Libra, then the centre.</td>
+</tr>
+<tr>
+<td>Mother's apartment exit remains unavailable</td>
+<td>Get Key A.S. and Trankill 6000, read notebook page 2, and call Montfort.</td>
+</tr>
+<tr>
+<td>Gisele's doctor will not let you in</td>
+<td>Ring Gradoux twice and Josephine twice, then try Doctor Ali Kafour again.</td>
+</tr>
+<tr>
+<td>Cannot change clothes to escape the club</td>
+<td>See the source inconsistency in chapter 5. The recovered scripts remove the briefcase and enable the wrong change action; repeating normal puzzle actions cannot repair this.</td>
+</tr>
+<tr>
+<td>Cannot leave Saint Arman's secret passage</td>
+<td>Read the desk notebook and inspect each of the four desk photographs.</td>
+</tr>
+<tr>
+<td>Cannot leave Belleville's house</td>
+<td>Search the shoes for the bank paper, take the trunk notes, and take the glove-compartment note.</td>
+</tr>
+<tr>
+<td>Final ritual says something is missing</td>
+<td>Place Saint Arman's altar painting and load the incense, then light the brazier.</td>
+</tr>
+<tr>
+<td>Temple disk buttons do nothing</td>
+<td>Install Christine's Babylon battery in the villa device.</td>
+</tr>
+<tr>
+<td>Female sarcophagus stays shut</td>
+<td>Reset incorrect disks. Submit only Isis's left symbol and Mnemosis's upper-right symbol, once each.</td>
+</tr>
+<tr>
+<td>Male sarcophagus stays shut</td>
+<td>Use Jean's dagger on it; the disks open the other sarcophagus.</td>
+</tr>
+<tr>
+<td>Final tube room seems inert</td>
+<td>Inspect both screens, then approach Anne's tube and inspect Anne.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="source-notes">Source notes</h2>
+<p>The walkthrough uses local recovered sources, with no external walkthrough used:</p>
+<ul>
+<li>Scene scripts and dialogue: 448 records; these control locations, actions, and progression.</li>
+<li>Inventory scripts: 145 records; these specify item combinations, valid targets, rewards, and hidden progress markers.</li>
+<li>Journal entries: player-facing objectives and clue summaries.</li>
+<li><a href="https://github.com/patheticaesthetic94/fade-decompilation/blob/main/decomp/game.c" target="_blank" rel="noopener">Decompiled engine</a>: <code>ParseSceneScript</code> at <code>0x1a638</code>, <code>ExecSceneScript</code> at <code>0x1b954</code>, <code>Game_UseInventoryItem</code> at <code>0x2579c</code>, and <code>Script_Run</code> at <code>0x283b0</code> establish how those records execute. In particular, <code>_If</code> tests inventory membership, including hidden marker items.</li>
+<li><a href="https://github.com/patheticaesthetic94/fade-decompilation/blob/main/README.md" target="_blank" rel="noopener">Android controls and verification limits</a>.</li>
+</ul>
+<p>The main checks are independently traced by <code>tools/walkthrough_audit.py</code> in the local source workspace. Run <code>python3 tools/walkthrough_audit.py</code> from the repository root to recheck the zodiac sequence, keypad, temple symbols, evidence gates, and ending trigger against the current recovered data. It checks script logic; it does not simulate taps or prove that the entire port campaign works.</p><footer>Reconstructed from the local decompilation and recovered English scripts. Use your browser’s Print command to save a PDF.</footer></main></body></html>

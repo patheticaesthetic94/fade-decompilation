@@ -46,6 +46,14 @@ All paths are relative, so repository subpaths and custom domains both work.
 The expected site URL is https://patheticaesthetic94.github.io/fade-decompilation/.
 The workflow's deployment output confirms the actual live URL.
 
+## Walkthrough while playing
+
+The player toolbar's **Walkthrough** button opens the full guide alongside the
+canvas on desktop, or below it on smaller screens. Its independently scrolling
+panel keeps its position when closed and reopened. The panel remains available
+in fullscreen, and **Open guide in a new tab** offers a separate reading window.
+The guide includes chapter links, puzzle solutions, checkpoints and story spoilers.
+
 ## Controls and saves
 
 Click/tap uses the original game coordinates. Arrow keys and Enter/Z, X, C map
