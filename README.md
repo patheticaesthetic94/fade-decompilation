@@ -18,9 +18,11 @@
 
 ## Quick start
 
-- [Play the Original or HD on web](https://patheticaesthetic94.github.io/fade-decompilation/) - A port of the game for modern browsers which runs the original and HD versions of the game. Saves are kept in your browser and shared between editions, but can also be exported.
+- [Play on the web](https://patheticaesthetic94.github.io/fade-decompilation/) - The game runs inside a recreated Pocket PC on your desk. Choose **Classic** or **Remastered** on its screen, and use its direction pad and buttons or your keyboard. Saves are kept in your browser and shared between editions, but can also be exported.
 
-- [Android releases](https://github.com/patheticaesthetic94/fade-decompilation/releases/latest) - Download either the original version of the game or the HD version of the game as separate APK files. Both require Android 7.0+ and support arm64-v8a and x86_64. They share the app ID and signing key: install one over the other to switch editions and preserve saves. Uninstalling or clearing app data removes saves.
+- [Android release](https://github.com/patheticaesthetic94/fade-decompilation/releases/latest) - One APK holds both editions: its launcher offers **Classic** or **Remastered** each time you start. Requires Android 7.0+ and supports arm64-v8a and x86_64. It installs over earlier Original or HD releases and keeps their saves. Uninstalling or clearing app data removes saves.
+
+- **Pocket PC screen filter** (web and Android) - Recreates a 2001 3.8" transflective screen: the 240 × 320 pixel grid with RGB stripes, 65,536 colours, raised blacks and a narrow gamut, an uneven front light and slow pixel response. On the web it can be switched on or off while playing.
 
 ## HD Remaster (Optional)
 
@@ -47,11 +49,12 @@ Whilst the game can be enjoyed in it's original resolution using all of it's ori
 Install Python 3, JDK 17+, Android SDK platform 35, NDK `29.0.14206865`, and Android CMake `3.22.1` or newer. Set `ANDROID_HOME` to the SDK path; the macOS default is `~/Library/Android/sdk`. The first build downloads SDL2 2.32.10, Gradle 8.11.1, and Android build dependencies. No third-party Python packages or decompiler installation are needed.
 
 ```sh
-tools/android_build.sh       # original debug APK
-tools/android_build.sh --hd  # HD debug APK
+tools/android_build.sh       # debug APK with Classic and Remastered
 ```
 
 Output: `port/android/app/build/outputs/apk/debug/app-debug.apk`.
+
+To build the web player, see [port/WEB.md](port/WEB.md).
 
 For signed releases, supply your own private keystore and password file:
 
@@ -62,14 +65,14 @@ export FADE_RELEASE_KEY_ALIAS=fade-release
 tools/android_release.sh
 ```
 
-The key and keystore use the same password. Outputs: `build/releases/fade-android-original.apk` and `build/releases/fade-android-hd.apk`. Use the same signing key for future updates.
+The key and keystore use the same password. Output: `build/releases/fade-android.apk`. Use the same signing key for future updates.
 
 ## Required inputs
 
 - `decomp/`: recovered game source and types used by the source generator.
 - `port/`: native runtime, fixups, Android project, app icon, fonts, and third-party headers/notices.
 - `extracted/`: original encoded resources and executable data image required at runtime.
-- `hd-assets/`, `hd-audio/`: HD resources and manifests used during staging.
+- `hd-assets/`, `hd-audio/`: Remastered resources and manifests, verified and staged by `tools/stage_assets.py`.
 - `tools/`: source generation, compiler correction, asset staging, and build scripts.
 
 Generated code, build outputs, caches, machine settings, and signing keys stay outside Git. Fade resources belong to their original creators; font licenses and third-party notices are retained.

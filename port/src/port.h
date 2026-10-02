@@ -26,6 +26,13 @@ void port_present(int force);
 extern uint16_t *port_fb;          // 240x320 RGB565 GAPI framebuffer (arena)
 void port_pump(int wait_ms);       // SDL events -> Win32 message queue
 void port_delay(uint32_t ms);      // cooperative browser wait, SDL delay natively
+extern int port_classic;           // FADE_EDITION=classic: original art, bitmap fonts and sounds only
+extern int port_lcd;               // FADE_LCD=1: simulate the Pocket PC screen (lcd.c)
+
+// lcd.c
+const uint32_t *lcd_render(void);  // 960x1280 ARGB frame of the simulated panel
+int lcd_settling(void);            // the panel is still fading towards the last frame
+void lcd_reset(void);
 
 // win32.c
 void msg_post(uint32_t msg, uint32_t wp, uint32_t lp);

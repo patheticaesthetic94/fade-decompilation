@@ -110,6 +110,12 @@ SDL_RWops *files_open_asset(const char *rel_lower)
     }
     if (!real) return NULL;
     char full[600];
+    // Combined packages keep the remastered sounds beside the originals (same encoded names).
+    if (!port_classic && !SDL_strncasecmp(real, "sounds/", 7)) {
+        SDL_snprintf(full, sizeof full, "hdaudio/%s", real);
+        SDL_RWops *rw = SDL_RWFromFile(full, "rb");
+        if (rw) return rw;
+    }
     SDL_snprintf(full, sizeof full, DATA_DIR "%s", real);
     return SDL_RWFromFile(full, "rb");
 }

@@ -1,18 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Play Fade</title><link rel="stylesheet" href="site.css"><script src="player.js" defer></script></head>
-<body><main class="player">
-<nav><a href="./">← Editions</a><strong id="edition">Fade</strong><div class="player-actions"><button id="walkthrough-toggle" type="button" aria-expanded="false" aria-controls="walkthrough-panel">Walkthrough</button><button id="fullscreen" type="button" disabled>Fullscreen</button></div></nav>
-<div class="play-space"><div class="game-column">
-<div class="game-frame" id="game-frame"><canvas id="canvas" width="720" height="960" tabindex="0" aria-label="Fade game. Click or tap to interact; arrow keys to navigate."></canvas>
-<div id="overlay"><h1>FADE</h1><p id="status" role="status" aria-live="polite">Ready to play.</p><progress id="progress" hidden></progress><button id="start" type="button">Start game</button></div></div></div>
-<aside class="walkthrough-panel" id="walkthrough-panel" aria-label="Game walkthrough" hidden>
-<div class="walkthrough-heading"><div><h2>Walkthrough</h2><p>Story and puzzle spoilers</p></div><button id="walkthrough-close" type="button" aria-label="Close walkthrough">Close</button></div>
-<a class="walkthrough-tab" href="walkthrough.html" target="_blank" rel="noopener">Open guide in a new tab ↗</a>
-<iframe id="walkthrough-guide" title="Fade step-by-step walkthrough" data-src="walkthrough.html" loading="lazy"></iframe>
-</aside></div>
-<p class="controls">Click or tap to interact · Lower-right arrow to continue text · Arrow keys to navigate · Enter / Z, X, C for game buttons</p>
-<p id="storage" class="note">Use the game’s Save command. Saved games stay in this browser and are shared by both editions.</p>
-<button id="backup" type="button" disabled>Download save backup</button>
-<p class="note">Clearing this site’s browser data removes saved games. Private browsing may not keep them.</p>
-</main></body></html>
+<head><meta charset="utf-8"><title>Fade</title>
+<script>location.replace('./' + location.search + location.hash);</script>
+<meta http-equiv="refresh" content="0; url=./"></head>
+<body><p><a href="./">Play Fade</a></p></body></html>

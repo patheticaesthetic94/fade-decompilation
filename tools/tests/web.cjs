@@ -1,4 +1,5 @@
-// Browser regression: real menus, gameplay, save/reload, and cross-edition saves.
+// Browser regression: in-screen launcher, real menus, gameplay, save/reload, cross-edition saves,
+// the live screen filter and the device's hardware buttons.
 // NODE_PATH=build/web-test/node_modules node tools/tests/web.cjs
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -17,10 +18,9 @@ fs.mkdirSync(output, { recursive: true });
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
     async function launch(mode) {
-      await page.goto(`${base}play.html?version=${mode}`);
-      await page.click('#start');
-      await page.waitForFunction(() => typeof game !== 'undefined' && game?.HEAPU8?.[0x474b1] === 1,
-        null, { timeout: 120000 });
+      await page.goto(`${base}?lcd=0`);
+      await page.click(`.edition[data-edition="${mode}"]`);
+      await page.waitForFunction(() => window.game?.HEAPU8?.[0x474b1] === 1, null, { timeout: 180000 });
       assert.deepEqual(errors, [], 'Browser runtime errors');
     }
     async function tap(x, y) {
@@ -48,7 +48,7 @@ fs.mkdirSync(output, { recursive: true });
       }
       return result;
     });
-    await launch('normal');
+    await launch('classic');
     await page.screenshot({ path: `${output}/original-menu.png` });
     await tap(120, 20);
     assert.equal(await page.evaluate(() => game.HEAPU8[0x48688]), 1, 'New Game enters gameplay');
@@ -68,9 +68,9 @@ fs.mkdirSync(output, { recursive: true });
     const saved = await saves();
     assert(Object.keys(saved).length > 0, 'Game Save writes a real save file');
     await page.waitForTimeout(1000); // Let IDBFS autoPersist settle without a manual sync.
-    await launch('normal');
+    await launch('classic');
     assert.deepEqual(await saves(), saved, 'Saves restored automatically after reload');
-    await launch('hd');
+    await launch('remastered');
     assert.deepEqual(await saves(), saved, 'HD restores the same saved games');
     await page.screenshot({ path: `${output}/hd-menu.png` });
     await tap(120, 55);
@@ -79,8 +79,27 @@ fs.mkdirSync(output, { recursive: true });
     await page.waitForTimeout(2000);
     assert.equal(await page.evaluate(() => game.HEAPU8[0x48688]), 1, 'HD loads the Original save');
     await page.screenshot({ path: `${output}/hd-loaded-scene.png` });
+    // The screen filter switches on and off while playing.
+    const frame = () => page.locator('#canvas').screenshot();
+    const plain = await frame();
+    await page.click('#lcd-toggle');
+    await page.waitForTimeout(800);
+    assert(!plain.equals(await frame()), 'Screen filter changes the rendered panel');
+    await page.screenshot({ path: `${output}/hd-filter.png` });
+    await page.click('#lcd-toggle');
+    // The device's direction pad sends the game's arrow keys.
+    const keys = [];
+    page.on('console', m => { if (m.text().includes('key down')) keys.push(m.text()); });
+    await page.goto(`${base}?edition=classic&trace=1`);
+    await page.waitForFunction(() => window.game?.HEAPU8?.[0x474b1] === 1, null, { timeout: 180000 });
+    const pad = page.locator('.dpad .down');
+    await pad.dispatchEvent('pointerdown', { pointerId: 1 });
+    await page.waitForTimeout(200);
+    await pad.dispatchEvent('pointerup', { pointerId: 1 });
+    await page.waitForTimeout(500);
+    assert(keys.some(k => k.includes('vk 0x28')), 'Direction pad reaches the game as VK_DOWN');
     assert.deepEqual(errors, [], 'No runtime errors during gameplay or save loading');
-    console.log('PASS: Original/HD menus, gameplay, actual save, reload persistence, cross-edition loading');
+    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons');
   } finally {
     await browser.close();
   }

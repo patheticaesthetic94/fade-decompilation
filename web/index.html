@@ -1,14 +1,110 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fade — Play in your browser</title><link rel="stylesheet" href="site.css"></head>
-<body><main class="landing">
-<p class="eyebrow">FADE TEAM · 2001</p><h1>FADE</h1>
-<p class="intro">A Pocket PC adventure, back in your browser.</p>
-<p>Explore, talk, and unravel the mystery. Play the English game with its original artwork or the enhanced HD edition.</p>
-<div class="editions">
-<a class="edition" href="play.html?version=normal"><span class="badge">THE CLASSIC</span><h2>Original</h2><p>Original 240 × 320 artwork and bitmap text. The smaller download.</p><span class="play">Play Original →</span></a>
-<a class="edition" href="play.html?version=hd"><span class="badge">A CLOSER LOOK</span><h2>HD</h2><p>4× enhanced artwork and crisp outline text. A larger download.</p><span class="play">Play HD →</span></a>
-</div>
-<p class="note">Click or tap to play. Both editions share saved games in this browser. Use the game’s Save command to keep your progress.</p>
-<footer>Recovered game code · SDL2 · WebAssembly</footer>
-</main></body></html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fade</title>
+<meta name="description" content="Fade (Fade Team, 2001), the Pocket PC adventure, recompiled to run in your browser. Play the Classic or Remastered edition.">
+<meta name="theme-color" content="#141011">
+<link rel="icon" href="fade-icon.png">
+<link rel="stylesheet" href="site.css">
+<script src="player.js" defer></script>
+</head>
+<body>
+<main class="stage" id="stage">
+  <div class="device" id="device" data-state="off">
+    <div class="device-head">
+      <button class="power" id="power" type="button" aria-label="Power: return to edition choice" title="Power: return to edition choice"></button>
+      <span class="led" aria-hidden="true"></span>
+      <span class="grille" aria-hidden="true"></span>
+      <span class="ir" aria-hidden="true"></span>
+    </div>
+    <div class="bezel">
+      <div class="screen" id="screen">
+        <canvas id="canvas" tabindex="-1" aria-label="Fade game screen. Click or tap to interact; arrow keys to navigate." hidden></canvas>
+
+        <section class="ppc today" id="today" aria-label="Choose an edition">
+          <header class="navbar"><span class="start"><i></i>Fade</span><span class="clock" id="clock"></span></header>
+          <div class="today-body">
+            <p class="today-date" id="today-date"></p>
+            <p class="today-owner">Owner: Fade Team, 2001</p>
+            <h1 class="today-title">Choose an edition</h1>
+            <button class="edition" type="button" data-edition="classic">
+              <img src="fade-icon.png" alt="" width="64" height="64">
+              <span><b>Classic</b><small>Original 240×320 art, bitmap text and sound</small><em id="size-classic"></em></span>
+            </button>
+            <button class="edition" type="button" data-edition="remastered">
+              <img src="fade-icon.png" alt="" width="64" height="64"><i class="hd-badge" aria-hidden="true">HD</i>
+              <span><b>Remastered</b><small>4× art, outline text and enhanced sound</small><em id="size-remastered"></em></span>
+            </button>
+            <label class="check"><input type="checkbox" id="lcd-launch"><span>Pocket PC screen filter</span></label>
+            <p class="today-note">Both editions share saved games.</p>
+          </div>
+          <footer class="cmdbar"><button type="button" data-open="guide">Walkthrough</button><button type="button" data-open="help">Help</button></footer>
+        </section>
+
+        <section class="ppc loading" id="loading" aria-live="polite" hidden>
+          <header class="navbar"><span class="start"><i></i>Fade</span><span class="clock"></span></header>
+          <div class="loading-body">
+            <img src="fade-icon.png" alt="" width="72" height="72">
+            <p id="status" role="status">Loading…</p>
+            <div class="bar"><div id="bar-fill"></div></div>
+            <p class="loading-detail" id="detail"></p>
+            <button type="button" class="ppc-button" id="retry" hidden>Try again</button>
+          </div>
+        </section>
+
+        <div class="glass" aria-hidden="true"></div>
+      </div>
+    </div>
+    <p class="wordmark" aria-hidden="true">Pocket PC</p>
+    <div class="keys" role="group" aria-label="Hardware buttons">
+      <button class="app app1" type="button" data-key="z" aria-label="Button 1 (Enter or Z)"><svg viewBox="0 0 16 16"><rect x="3" y="4" width="10" height="9" rx="1"/><path d="M3 7h10M6 3v2M10 3v2"/></svg></button>
+      <button class="app app2" type="button" data-key="x" aria-label="Button 2 (X)"><svg viewBox="0 0 16 16"><circle cx="8" cy="6" r="2.5"/><path d="M3.5 13c.8-2.6 2.5-3.8 4.5-3.8s3.7 1.2 4.5 3.8"/></svg></button>
+      <div class="dpad" aria-label="Direction pad">
+        <button type="button" class="up" data-key="ArrowUp" aria-label="Up"></button>
+        <button type="button" class="left" data-key="ArrowLeft" aria-label="Left"></button>
+        <button type="button" class="action" data-key="Enter" aria-label="Action (Enter)"></button>
+        <button type="button" class="right" data-key="ArrowRight" aria-label="Right"></button>
+        <button type="button" class="down" data-key="ArrowDown" aria-label="Down"></button>
+      </div>
+      <button class="app app3" type="button" data-key="c" aria-label="Button 3 (C)"><svg viewBox="0 0 16 16"><rect x="2.5" y="4" width="11" height="8" rx="1"/><path d="M2.5 4.5 8 9l5.5-4.5"/></svg></button>
+      <button class="app app4" type="button" data-key="Escape" aria-label="Button 4 (Escape)"><svg viewBox="0 0 16 16"><path d="M4 4.5h8M4 8h8M4 11.5h5"/></svg></button>
+    </div>
+  </div>
+</main>
+
+<nav class="dock" aria-label="Player controls">
+  <button type="button" id="lcd-toggle" aria-pressed="false" title="Pocket PC screen filter"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7v10M12 7v10M16 7v10"/></svg><span>Screen filter</span></button>
+  <button type="button" data-open="guide" aria-expanded="false" aria-controls="guide" title="Walkthrough"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg><span>Walkthrough</span></button>
+  <button type="button" id="fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg><span>Fullscreen</span></button>
+  <button type="button" id="backup" title="Download a backup of your saves" disabled><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Back up saves</span></button>
+  <button type="button" data-open="help" title="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.5M12 17h.01"/></svg><span>Help</span></button>
+</nav>
+
+<aside class="guide" id="guide" aria-label="Walkthrough" hidden>
+  <div class="guide-head"><div><h2>Walkthrough</h2><p>Contains story and puzzle spoilers</p></div><button type="button" id="guide-close">Close</button></div>
+  <a class="guide-tab" href="walkthrough.html" target="_blank" rel="noopener">Open in a new tab ↗</a>
+  <iframe id="guide-frame" title="Fade step-by-step walkthrough" data-src="walkthrough.html"></iframe>
+</aside>
+
+<dialog class="help" id="help">
+  <h2>Fade</h2>
+  <p>The 2001 Pocket PC adventure by Fade Team, recompiled from the original game to run natively in your browser.</p>
+  <h3>Controls</h3>
+  <ul>
+    <li>Click or tap the screen to interact. Tap the lower-right arrow to continue text.</li>
+    <li>Arrow keys or the direction pad navigate. Enter / Z, X and C are the hardware buttons.</li>
+    <li>The power button returns to the edition choice.</li>
+  </ul>
+  <h3>Editions</h3>
+  <p><b>Classic</b> is the game as released. <b>Remastered</b> adds 4× artwork, outline text and enhanced sound, and is a larger download. Downloads are kept by the browser for next time.</p>
+  <h3>Screen filter</h3>
+  <p>Recreates a 2001 3.8″ transflective panel: the 240×320 pixel grid with RGB stripes, 65,536 colours, raised blacks and a narrow gamut, an uneven front light and slow pixel response. It can be switched on or off while playing.</p>
+  <h3>Saves</h3>
+  <p>Use the game’s Save command. Saves stay in this browser and are shared by both editions. Clearing site data removes them, and private browsing may not keep them, so download a backup now and then.</p>
+  <p class="help-links"><a href="https://github.com/patheticaesthetic94/fade-decompilation">Source on GitHub</a></p>
+  <form method="dialog"><button>Close</button></form>
+</dialog>
+</body>
+</html>

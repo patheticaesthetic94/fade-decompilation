@@ -18,10 +18,12 @@
 
 static SDL_Window *win;
 static SDL_Renderer *ren;
-static SDL_Texture *tex;
+static SDL_Texture *tex, *lcd_tex;
 static Uint32 last_present;
 static int fb_dirty;
 int port_trace;
+int port_classic;
+int port_lcd;
 
 void port_fatal(const char *fmt, ...)
 {
@@ -44,13 +46,31 @@ void port_present(int force)
     if (!force && now - last_present < 15) return;
     last_present = now;
     fb_dirty = 0;
-    if (hd_enabled()) SDL_UpdateTexture(tex, NULL, hd_frame(), SCREEN_W * HD_SCALE * 4);
-    else SDL_UpdateTexture(tex, NULL, port_fb, SCREEN_W * 2);
+    SDL_Texture *shown = tex;
+    if (port_lcd) {
+        if (!lcd_tex) lcd_tex = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+                                                  SCREEN_W * 4, SCREEN_H * 4);
+        if (lcd_tex) { SDL_UpdateTexture(lcd_tex, NULL, lcd_render(), SCREEN_W * 4 * 4); shown = lcd_tex; }
+    }
+    if (shown == tex) {
+        if (hd_enabled()) SDL_UpdateTexture(tex, NULL, hd_frame(), SCREEN_W * HD_SCALE * 4);
+        else SDL_UpdateTexture(tex, NULL, port_fb, SCREEN_W * 2);
+    }
     SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
     SDL_RenderClear(ren);
-    SDL_RenderCopy(ren, tex, NULL, NULL);
+    SDL_RenderCopy(ren, shown, NULL, NULL);
     SDL_RenderPresent(ren);
 }
+
+#ifdef __EMSCRIPTEN__
+// Called by the web player's screen-filter switch.
+EMSCRIPTEN_KEEPALIVE void port_set_lcd(int on)
+{
+    port_lcd = on != 0;
+    lcd_reset();
+    fb_dirty = 1;
+}
+#endif
 
 static uint32_t vk_of(SDL_Keycode k)
 {
@@ -85,6 +105,8 @@ void port_delay(uint32_t ms)
 
 void port_pump(int wait_ms)
 {
+    // Keep presenting while the simulated panel's slow response fades out.
+    if (port_lcd && lcd_settling()) { fb_dirty = 1; if (wait_ms > 16) wait_ms = 16; }
 #ifdef __EMSCRIPTEN__
     // Yield even for PeekMessage polling so animations and browser input run.
     emscripten_sleep(wait_ms > 0 ? wait_ms : 1);
@@ -104,7 +126,12 @@ void port_pump(int wait_ms)
         case SDL_MOUSEMOTION:
             if (e.motion.state & SDL_BUTTON_LMASK) msg_post(0x200, 1, lparam_xy(e.motion.x, e.motion.y));
             break;
-        case SDL_KEYDOWN: { uint32_t vk = vk_of(e.key.keysym.sym); if (vk) msg_post(0x100, vk, 1); break; }
+        case SDL_KEYDOWN: {
+            uint32_t vk = vk_of(e.key.keysym.sym);
+            if (port_trace) port_log("key down %s -> vk %#x", SDL_GetKeyName(e.key.keysym.sym), vk);
+            if (vk) msg_post(0x100, vk, 1);
+            break;
+        }
         case SDL_KEYUP: { uint32_t vk = vk_of(e.key.keysym.sym); if (vk) msg_post(0x101, vk, 0xc0000001u); break; }
         case SDL_APP_WILLENTERBACKGROUND: msg_post(8 /* WM_KILLFOCUS */, 0, 0); break;
         case SDL_APP_DIDENTERFOREGROUND: msg_post(7 /* WM_SETFOCUS */, 0, 0); port_present(1); break;
@@ -178,6 +205,11 @@ static void *game_thread(void *arg)
 int main(int argc, char **argv)
 {
     port_trace = SDL_getenv("FADE_TRACE") != NULL;
+    // The launcher selects an edition; without one, the packaged media decides (older single-edition builds).
+    const char *edition = SDL_getenv("FADE_EDITION");
+    port_classic = edition && !strcmp(edition, "classic");
+    const char *lcd = SDL_getenv("FADE_LCD");
+    port_lcd = lcd && lcd[0] == '1';
 #ifdef __ANDROID__
     char prop[PROP_VALUE_MAX] = "";
     __system_property_get("debug.fade.trace", prop);
@@ -201,8 +233,12 @@ int main(int argc, char **argv)
     SDL_free(exe);
     files_init();
     port_fb = arena_calloc(SCREEN_W * SCREEN_H * 2);
-    hd_init();
-    text_init();
+    if (!port_classic) {
+        hd_init();
+        text_init();
+    }
+    port_log("edition: %s%s", port_classic ? "classic" : hd_enabled() ? "remastered" : "original media",
+             port_lcd ? ", Pocket PC screen filter" : "");
 
 #ifdef __EMSCRIPTEN__
     // Asyncify preserves the recovered WinMain call stack across browser turns.

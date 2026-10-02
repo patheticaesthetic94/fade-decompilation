@@ -16,14 +16,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Prepare Original and HD assets
-        run: python3 tools/prepare_web_assets.py
+      - name: Stage Classic and Remastered assets
+        run: python3 tools/stage_assets.py --output build/web-assets
       - name: Install Emscripten
         run: |
           git clone --depth 1 https://github.com/emscripten-core/emsdk.git build/emsdk
           build/emsdk/emsdk install 4.0.15
           build/emsdk/emsdk activate 4.0.15
-      - name: Build Original and HD
+      - name: Build the web player
         run: |
           source build/emsdk/emsdk_env.sh
           tools/web_build.sh
