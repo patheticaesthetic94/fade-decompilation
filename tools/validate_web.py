@@ -13,8 +13,9 @@ assert (site / 'fade.wasm').read_bytes()[:4] == b'\0asm'
 packs = json.loads((site / 'data/packs.json').read_text())
 for name in ('classic', 'remastered'):
     pack = packs[name]
-    data = site / 'data' / pack['data']
-    assert data.stat().st_size == pack['size'], f'{name} size mismatch'
+    for part in pack['parts']:
+        assert (site / 'data' / part['file']).stat().st_size == part['bytes'], f'{part["file"]} size mismatch'
+    assert sum(p['size'] for p in pack['parts']) == pack['size'], f'{name} parts do not cover the pack'
     assert all(0 <= off and off + n <= pack['size'] for _, off, n in pack['files'])
 paths = {p for _, pack in packs.items() for p, *_ in pack['files']}
 for required in ('fade/Fade.exe', 'fade/files.txt', 'hd/files.txt', 'fonts/runtime.txt'):

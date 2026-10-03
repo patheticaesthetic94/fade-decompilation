@@ -90,6 +90,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   position: relative; width: calc(240 * var(--u)); height: calc(320 * var(--u)); overflow: hidden;
   background: #0b0c0b; box-shadow: 0 0 0 1px #000;
 }
+.panel { position: relative; width: 100%; height: 100%; overflow: hidden; }
 .screen canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
 /* Glass above the panel: faint reflection and the shadow of the bezel's lip. */
 .glass {
@@ -204,10 +205,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .loading-body img { width: calc(56 * var(--u)); height: calc(56 * var(--u)); border-radius: calc(12 * var(--u)); margin-bottom: calc(10 * var(--u)); }
 .loading-body p { margin: calc(4 * var(--u)) 0; font-size: calc(10 * var(--u)); }
 .loading-detail { color: #444; min-height: 1.25em; }
-.bar { width: 100%; height: calc(12 * var(--u)); border: 1px solid #000; padding: 1px; background: #fff; }
+.bar { overflow: hidden; width: 100%; height: calc(12 * var(--u)); border: 1px solid #000; padding: 1px; background: #fff; }
 #bar-fill { height: 100%; width: 0; background: repeating-linear-gradient(90deg, #0b3c9e 0 calc(6 * var(--u)), #fff calc(6 * var(--u)) calc(7.5 * var(--u))); transition: width .2s; }
 .bar.indeterminate #bar-fill { width: 30%; animation: sweep 1.2s linear infinite; }
-@keyframes sweep { from { transform: translateX(-100%); } to { transform: translateX(340%); } }
+@keyframes sweep { from { transform: translateX(-100%); } to { transform: translateX(334%); } }
 .ppc-button { margin-top: calc(8 * var(--u)); padding: calc(3 * var(--u)) calc(14 * var(--u)); font: calc(10 * var(--u)) Tahoma, sans-serif; color: #000; background: #e4e4e4; border: 1px solid #000; box-shadow: inset -1px -1px #808080, inset 1px 1px #fff; }
 
 /* ---- dock, guide, help ----------------------------------------------------------------- */
@@ -263,5 +264,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .stage { bottom: 58px; }
   body.guide-open .dock { display: none; }
 }
-:fullscreen body, body:fullscreen { background-color: var(--desk-3); }
+/* Fullscreen: the device is put away and the panel fills the display at its 3:4 shape. */
+body.fs { background: #000; }
+body.fs .stage { inset: 0; container-type: normal; }
+body.fs .device { position: fixed; inset: 0; width: auto; padding: 0; border-radius: 0; background: #000; box-shadow: none; }
+body.fs .device::before, body.fs .device::after, body.fs .device-head, body.fs .wordmark, body.fs .keys { display: none; }
+body.fs .bezel { position: fixed; inset: 0; width: auto; padding: 0; border-radius: 0; background: #000; box-shadow: none;
+  display: grid; place-items: center; }
+body.fs .screen { --u: min(calc(100vw / 240), calc(100dvh / 320)); width: calc(240 * var(--u)); height: calc(320 * var(--u)); box-shadow: none; }
+body.fs .glass { display: none; }
+body.fs .dock { opacity: 0; }
+body.fs .dock:hover, body.fs .dock:focus-within, body.fs.pointer-active .dock { opacity: 1; }
+body.fs.guide-open .dock { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

@@ -98,8 +98,19 @@ fs.mkdirSync(output, { recursive: true });
     await pad.dispatchEvent('pointerup', { pointerId: 1 });
     await page.waitForTimeout(500);
     assert(keys.some(k => k.includes('vk 0x28')), 'Direction pad reaches the game as VK_DOWN');
+    // Fullscreen puts the device away and fits the 3:4 game to the display.
+    await page.click('#fullscreen');
+    await page.waitForTimeout(800);
+    const box = await page.locator('#canvas').boundingBox();
+    const view = page.viewportSize();
+    assert(Math.abs(Math.min(view.width / 240, view.height / 320) * 320 - box.height) < 2, 'Fullscreen game fills the display');
+    assert(!(await page.locator('.keys').isVisible()), 'Fullscreen hides the device');
+    await page.screenshot({ path: `${output}/fullscreen.png` });
+    // Both editions' parts were stored, so a repeat visit needs no download.
+    await page.goto(base);
+    await page.waitForFunction(() => document.querySelector('#size-remastered').textContent === 'Stored on this device');
     assert.deepEqual(errors, [], 'No runtime errors during gameplay or save loading');
-    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons');
+    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons, fullscreen, stored downloads');
   } finally {
     await browser.close();
   }

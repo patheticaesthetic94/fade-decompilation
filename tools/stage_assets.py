@@ -47,7 +47,18 @@ def stage_original(stage, source):
     return len(names)
 
 
-def stage_hd(stage, pack):
+def to_jpeg(png, quality):
+    """Re-encode an HD image for download size. The runtime takes alpha from the original's colour key,
+    so only RGB matters; 4:4:4 JPEG at q92 averages about 45 dB PSNR at under a fifth of the PNG size."""
+    from io import BytesIO
+    from PIL import Image
+    out = BytesIO()
+    # No optimize=True: stb_image 2.30 rejects Pillow's optimised Huffman tables ("bad huffman code").
+    Image.open(png).convert('RGB').save(out, 'JPEG', quality=quality, subsampling=0)
+    return out.getvalue()
+
+
+def stage_hd(stage, pack, jpeg_quality=None):
     manifest = json.loads((pack / 'manifest.json').read_text())
     if manifest['scale'] != 4:
         raise ValueError('HD renderer requires a 4x pack')
@@ -63,9 +74,14 @@ def stage_hd(stage, pack):
         image = pack / rel
         if digest(image) != asset['output_sha256']:
             raise ValueError(f'HD hash mismatch: {name}')
+        if jpeg_quality:
+            rel = rel.with_suffix('.jpg')
         target = stage / 'hd' / rel
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(image, target)
+        if jpeg_quality:
+            target.write_bytes(to_jpeg(image, jpeg_quality))
+        else:
+            shutil.copy2(image, target)
         lines.append(mangle(name).lower() + '\t' + rel.as_posix())
     (stage / 'hd/files.txt').write_text('\n'.join(sorted(lines)) + '\n')
     return len(lines)
@@ -117,6 +133,8 @@ def main():
     parser.add_argument('--output', type=Path, default=ROOT / 'build/android-assets')
     parser.add_argument('--hd-pack', type=Path, default=Path(os.environ.get('FADE_HD_PACK', ROOT / 'hd-assets')))
     parser.add_argument('--audio-pack', type=Path, default=Path(os.environ.get('FADE_AUDIO_PACK', ROOT / 'hd-audio')))
+    parser.add_argument('--hd-jpeg', type=int, metavar='QUALITY',
+                        help='Re-encode HD images as JPEG (smaller web download; needs Pillow)')
     args = parser.parse_args()
     output = args.output.resolve()
     hd_pack = (ROOT / args.hd_pack).resolve()
@@ -131,7 +149,7 @@ def main():
     if output.exists():
         shutil.rmtree(output)
     files = stage_original(output, source)
-    images = stage_hd(output, hd_pack)
+    images = stage_hd(output, hd_pack, args.hd_jpeg)
     stage_fonts(output)
     sounds = stage_audio(output, audio_pack, source)
     size = sum(p.stat().st_size for p in output.rglob('*') if p.is_file()) / 2**20

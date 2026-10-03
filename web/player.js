@@ -69,10 +69,32 @@ for (const b of document.querySelectorAll('[data-open]')) {
 }
 $('#guide-close').onclick = () => showGuide(false);
 
-$('#fullscreen').onclick = () => {
-  if (document.fullscreenElement) document.exitFullscreen();
-  else document.documentElement.requestFullscreen?.().catch(() => {});
+// Fullscreen hides the device and scales the game to the display. Without the Fullscreen API
+// (iPhone Safari), the same layout fills the browser window instead.
+const fsButton = $('#fullscreen');
+function setFullscreen(on) {
+  document.body.classList.toggle('fs', on);
+  fsButton.setAttribute('aria-pressed', String(on));
+  fsButton.querySelector('span').textContent = on ? 'Exit fullscreen' : 'Fullscreen';
+  window.dispatchEvent(new Event('resize'));
+}
+fsButton.onclick = () => {
+  const on = !document.body.classList.contains('fs');
+  if (!on && document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  else if (on && document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen({ navigationUI: 'hide' }).catch(() => setFullscreen(true));
+  }
+  if (!document.documentElement.requestFullscreen || !on) setFullscreen(on);
 };
+document.addEventListener('fullscreenchange', () => setFullscreen(Boolean(document.fullscreenElement)));
+// Reveal the dock briefly when the pointer moves in fullscreen.
+let idle;
+window.addEventListener('pointermove', () => {
+  if (!document.body.classList.contains('fs')) return;
+  document.body.classList.add('pointer-active');
+  clearTimeout(idle);
+  idle = setTimeout(() => document.body.classList.remove('pointer-active'), 2000);
+});
 $('#power').onclick = () => {
   if (!running || confirm('Return to the edition choice? Unsaved progress will be lost.')) location.href = location.pathname;
 };
@@ -117,46 +139,97 @@ window.addEventListener('keydown', event => {
 });
 
 // ---- data packs --------------------------------------------------------------------------
+// Each pack is split into content-hashed parts (tools/pack_web_data.py). Parts download a few at a
+// time and are kept in Cache Storage, so a repeat visit (or a retry after an interruption) only
+// fetches what is missing.
+const PARALLEL = 4;
+const openCache = () => (window.caches ? caches.open('fade-data').catch(() => null) : Promise.resolve(null));
+const partUrl = part => new URL(`data/${part.file}`, location.href).href;
+
 async function loadIndex() {
   const response = await fetch('data/packs.json', { cache: 'no-cache' });
   if (!response.ok) throw new Error('The game files could not be found.');
   packs = await response.json();
-  $('#size-classic').textContent = `${mib(packs.classic.size)} download`;
-  $('#size-remastered').textContent = `${mib(packs.classic.size + packs.remastered.size)} download`;
+  const cache = await openCache();
+  const current = new Set([...packs.classic.parts, ...packs.remastered.parts].map(partUrl));
+  const stored = new Set();
+  if (cache) {
+    for (const request of await cache.keys()) {
+      if (current.has(request.url)) stored.add(request.url);
+      else cache.delete(request);   // parts of an older release
+    }
+  }
+  const missing = list => list.filter(pack => pack.parts.some(part => !stored.has(partUrl(part))))
+    .reduce((sum, pack) => sum + pack.bytes, 0);
+  const label = bytes => bytes ? `${mib(bytes)} download` : 'Stored on this device';
+  $('#size-classic').textContent = label(missing([packs.classic]));
+  $('#size-remastered').textContent = label(missing([packs.classic, packs.remastered]));
 }
 
-// Downloads one pack, keeping a copy in Cache Storage (versioned by content hash) for next time.
-async function fetchPack(pack, progress) {
-  const url = `data/${pack.data}?v=${pack.hash}`;
-  let cache = null;
-  try { cache = await caches.open('fade-data'); } catch { /* no Cache Storage (e.g. insecure context) */ }
-  const cached = cache && await cache.match(url).catch(() => null);
-  if (cached) {
-    const bytes = new Uint8Array(await cached.arrayBuffer());
-    if (bytes.length === pack.size) { progress(pack.size); return bytes; }
-  }
-  const response = await fetch(url);
-  if (!response.ok || !response.body) throw new Error('The game files could not be downloaded. Check your connection and try again.');
-  const bytes = new Uint8Array(pack.size);
+async function readBody(response, expected, progress) {
+  const bytes = new Uint8Array(expected);
   const reader = response.body.getReader();
   let received = 0;
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
-    if (received + value.length > pack.size) throw new Error('The downloaded game files are damaged. Try again.');
+    if (received + value.length > expected) throw new Error('The downloaded game files are damaged. Try again.');
     bytes.set(value, received);
     received += value.length;
-    progress(received);
+    progress(value.length);
   }
-  if (received !== pack.size) throw new Error('The download was interrupted. Try again.');
-  if (cache) {
-    try {
-      // Drop older versions of this pack, then keep the new one.
-      for (const old of await cache.keys()) if (old.url.includes(`/data/${pack.data}?`)) await cache.delete(old);
-      await cache.put(url, new Response(bytes, { headers: { 'Content-Type': 'application/octet-stream' } }));
-    } catch { /* quota exceeded: play without caching */ }
-  }
+  if (received !== expected) throw new Error('The download was interrupted. Try again.');
   return bytes;
+}
+
+// Fetches one part (from the cache when stored) and writes it, inflated, into the pack buffer.
+async function fetchPart(cache, part, target, offset, progress) {
+  const url = partUrl(part);
+  let body = null;
+  const cached = cache && await cache.match(url).catch(() => null);
+  if (cached) {
+    body = new Uint8Array(await cached.arrayBuffer());
+    if (body.length === part.bytes) progress(part.bytes);
+    else body = null;
+  }
+  if (!body) {
+    const response = await fetch(url).catch(() => null);
+    if (!response || !response.ok || !response.body) throw new Error('The game files could not be downloaded. Check your connection and try again.');
+    body = await readBody(response, part.bytes, progress);
+    if (cache) cache.put(url, new Response(body, { headers: { 'Content-Type': 'application/octet-stream' } })).catch(() => {});
+  }
+  let raw = body;
+  if (part.gzip) {
+    if (!window.DecompressionStream) throw new Error('This browser is too old to unpack the game files.');
+    raw = new Uint8Array(await new Response(new Blob([body]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
+  }
+  if (raw.length !== part.size) throw new Error('The downloaded game files are damaged. Try again.');
+  target.set(raw, offset);
+}
+
+async function fetchPacks(list, progress) {
+  const cache = await openCache();
+  // Ask the browser not to evict the stored game when space runs low.
+  navigator.storage?.persist?.().catch(() => {});
+  const jobs = [];
+  const buffers = list.map(pack => {
+    const bytes = new Uint8Array(pack.size);
+    let offset = 0;
+    for (const part of pack.parts) {
+      jobs.push([part, bytes, offset]);
+      offset += part.size;
+    }
+    return bytes;
+  });
+  let next = 0;
+  const worker = async () => {
+    while (next < jobs.length) {
+      const [part, bytes, offset] = jobs[next++];
+      await fetchPart(cache, part, bytes, offset, progress);
+    }
+  };
+  await Promise.all(Array.from({ length: PARALLEL }, worker));
+  return buffers;
 }
 
 function showLoading(message) {
@@ -202,17 +275,14 @@ async function start(edition) {
     if (!window.WebAssembly) throw new Error('This browser does not support WebAssembly.');
     if (!packs) await loadIndex();
     const wanted = remastered ? [packs.classic, packs.remastered] : [packs.classic];
-    const total = wanted.reduce((sum, p) => sum + p.size, 0);
-    let done = 0;
+    const total = wanted.reduce((sum, p) => sum + p.bytes, 0);
+    let received = 0;
     const engine = loadScript('fade.js');
-    const buffers = [];
-    for (const pack of wanted) {
-      buffers.push(await fetchPack(pack, received => {
-        barFill.style.width = `${((done + received) / total) * 100}%`;
-        detail.textContent = `${mib(done + received)} of ${mib(total)}`;
-      }));
-      done += pack.size;
-    }
+    const buffers = await fetchPacks(wanted, n => {
+      received += n;
+      barFill.style.width = `${(received / total) * 100}%`;
+      detail.textContent = `${mib(received)} of ${mib(total)}`;
+    });
     await engine;
     status.textContent = `Starting ${name}…`;
     detail.textContent = '';

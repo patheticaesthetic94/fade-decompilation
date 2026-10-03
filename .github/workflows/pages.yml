@@ -17,7 +17,9 @@ jobs:
         with:
           python-version: '3.13'
       - name: Stage Classic and Remastered assets
-        run: python3 tools/stage_assets.py --output build/web-assets
+        run: |
+          python3 -m pip install pillow==11.3.0
+          python3 tools/stage_assets.py --output build/web-assets --hd-jpeg 92
       - name: Install Emscripten
         run: |
           git clone --depth 1 https://github.com/emscripten-core/emsdk.git build/emsdk

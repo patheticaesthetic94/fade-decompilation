@@ -4,14 +4,33 @@ The web player compiles the recovered game and SDL2 platform layer into one
 WebAssembly engine. The page shows a recreated Pocket PC; its screen first shows
 a Today-style launcher where the player picks an edition:
 
-- **Classic**: original 240 × 320 artwork, bitmap fonts and sounds (`data/classic.data`).
-- **Remastered**: the 4× artwork pack, Comic Neue / Arimo outline fonts and the
-  verified 48 kHz sound pack (`data/remastered.data`, downloaded in addition to Classic
-  only when chosen).
+- **Classic**: original 240 × 320 artwork, bitmap fonts and sounds (about 8 MB to download).
+- **Remastered**: the 4× artwork, Comic Neue / Arimo outline fonts and the verified
+  48 kHz sound pack (about 90 MB more, downloaded only when chosen).
 
-The engine reads `FADE_EDITION=classic|remastered` before loading media. Downloads
-are kept in Cache Storage, keyed by each pack's content hash, so later visits start
-without downloading again.
+The engine reads `FADE_EDITION=classic|remastered` before loading media.
+
+## Downloads
+
+- For the web, `tools/stage_assets.py --hd-jpeg 92` re-encodes the 4× artwork as
+  4:4:4 JPEG. That is 70 MB instead of 379 MB of PNG, at about 45 dB mean PSNR. The
+  runtime takes alpha from the original's colour key, so only RGB is stored. Pillow's
+  `optimize` is off because stb_image 2.30 rejects its Huffman tables. Android keeps
+  the lossless PNGs.
+- `tools/pack_web_data.py` cuts each pack into parts of at most 8 MiB, named by
+  content hash. It gzips a part when that saves at least 10% (most of Classic). The
+  player downloads four parts at a time and inflates them with `DecompressionStream`.
+- Each part is stored in Cache Storage as it arrives, so an interrupted download
+  resumes. The player asks for persistent storage. Later visits start without the
+  network, and the launcher then reads "Stored on this device". Parts that are no
+  longer listed in `packs.json` are deleted.
+
+## Fullscreen
+
+The dock's fullscreen button puts the device away and scales the 3:4 game to fill the
+display, keeping its shape on a black background. Moving the pointer reveals the dock.
+Browsers without the Fullscreen API (iPhone Safari) get the same layout inside the
+browser window.
 
 ## Local build
 
@@ -20,7 +39,8 @@ Python 3 and the tracked `decomp/` sources are required; Ghidra and the Android
 SDK are unnecessary. Emscripten downloads its pinned SDL2 port on first use.
 
 ```sh
-python3 tools/stage_assets.py --output build/web-assets
+python3 -m pip install pillow   # for --hd-jpeg
+python3 tools/stage_assets.py --output build/web-assets --hd-jpeg 92
 source build/emsdk/emsdk_env.sh
 tools/web_build.sh
 python3 -m http.server 8000 --directory build/web
@@ -32,7 +52,7 @@ build. It stages `extracted/`, `hd-assets/` and `hd-audio/`, and validates every
 Remastered image and sound against its manifest hash. Use `--hd-pack` or
 `--audio-pack` (or `FADE_HD_PACK` / `FADE_AUDIO_PACK`) to select other complete
 packs. `tools/pack_web_data.py` splits the stage into the two downloads plus
-`data/packs.json` (file offsets and hashes) and extracts the launcher wallpaper.
+`data/packs.json` (parts and file offsets) and extracts the launcher wallpaper.
 Set `FADE_WEB_ASSETS` to build from a different staged directory.
 
 URL options: `?edition=classic` or `?edition=remastered` starts an edition directly,
@@ -92,13 +112,14 @@ with a 16 MiB stack. Asyncify preserves WinMain's blocking message loop, timers,
 animations and synchronous sound waits across browser event turns. No pthreads,
 SharedArrayBuffer, service worker or custom cross-origin headers are required.
 Downloaded packs are mounted into MEMFS without copying (`FS.createDataFile` owns
-slices of the downloaded buffer).
+slices of the reassembled pack buffer).
 
 `tools/validate_web.py` checks page files, the wasm header, both packs against
 `packs.json` and total deployment size. The workflow also runs `tools/tests/web.cjs`
 in Chromium: the launcher, both editions' menus, gameplay, real game saves,
 restoration after reload, loading a Classic save in Remastered, switching the
-filter while playing and the direction pad reaching the game. Run it locally with:
+filter while playing, the direction pad reaching the game, fullscreen sizing and
+stored downloads on a repeat visit. Run it locally with:
 
 ```sh
 npm install --prefix build/web-test playwright@1.63.0
