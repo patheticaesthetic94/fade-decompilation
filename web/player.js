@@ -23,14 +23,78 @@ const store = {
   get(key) { try { return localStorage.getItem(key); } catch { return null; } },
   set(key, value) { try { localStorage.setItem(key, value); } catch { /* storage unavailable */ } },
 };
-const mib = bytes => `${(bytes / 2 ** 20).toFixed(bytes < 100 * 2 ** 20 ? 1 : 0)} MB`;
+// ---- language: the device, Help and walkthrough follow it at once; the game text at its next start ----
+// ?lang=fr|en wins, then the last choice in this browser. English text lives in index.html; French
+// replaces each [data-i18n] element's contents and each [data-i18n-label] element's aria-label/title.
+let lang = (params.get('lang') || store.get('fade-lang')) === 'fr' ? 'fr' : 'en';
+const FR = {
+  filter: 'Filtre d’écran', canvas: 'Écran du jeu Fade. Cliquez ou touchez pour agir ; flèches pour naviguer.',
+  choose: 'Choisissez une édition', owner: 'Propriétaire : Fade Team, 2001',
+  classic: 'Classique', classicInfo: 'Graphismes 240×320, texte bitmap et sons d’origine',
+  remastered: 'Remasterisée', remasteredInfo: 'Graphismes 4×, texte vectoriel et son amélioré',
+  lcdLabel: 'Filtre d’écran Pocket PC', language: 'Langue', backup: 'Exporter', restore: 'Restaurer',
+  shared: 'Les deux éditions partagent les sauvegardes.', guide: 'Solution', help: 'Aide',
+  loading: 'Chargement…', retry: 'Réessayer', guideTitle: '<i></i>Solution', closeGuide: 'Fermer la solution',
+  spoiler: 'Dévoile l’histoire et les énigmes', guideLoading: 'Chargement de la solution…', chapters: 'Chapitres',
+  contents: 'Sommaire', top: 'Haut', newTab: 'Nouvel onglet ↗', helpTitle: '<i></i>Aide', closeHelp: 'Fermer l’aide',
+  buttons: 'Boutons de l’appareil', homeMenu: 'Accueil : menu des éditions', dpad: 'Pavé directionnel',
+  up: 'Haut', left: 'Gauche', right: 'Droite', down: 'Bas', centre: 'Bouton central (Entrée)',
+  fullscreen: 'Plein écran', exitFullscreen: 'Quitter le plein écran', dock: 'Commandes du plein écran', home: 'Accueil',
+};
+const MESSAGES = {
+  en: {
+    download: size => `${size} download`, stored: 'Stored on this device', of: (a, b) => `${a} of ${b}`,
+    loadingEdition: name => `Loading ${name}…`, starting: name => `Starting ${name}…`,
+    leave: 'Return to the edition menu? Anything since your last save will be lost.', yes: 'Yes', no: 'No',
+    backToEditions: 'Back to editions', stopped: message => `The game stopped: ${message}`,
+    closed: 'Game closed. Your saved games are kept in this browser.',
+    noStorage: 'Browser storage is unavailable. Download a save backup before leaving.',
+    missing: 'The game files could not be found.', damaged: 'The downloaded game files are damaged. Try again.',
+    interrupted: 'The download was interrupted. Try again.',
+    offline: 'The game files could not be downloaded. Check your connection and try again.',
+    oldBrowser: 'This browser is too old to unpack the game files.',
+    engineOffline: 'The game could not be downloaded. Check your connection and try again.',
+    noWasm: 'This browser does not support WebAssembly.',
+    guideFailed: 'The walkthrough could not be loaded. <a href="walkthrough.html" target="_blank" rel="noopener">Open it in a new tab</a>.',
+    savesCount: n => `Saved games: ${n}`, noSaves: 'No saved games yet',
+    notBackup: 'That file is not a Fade save backup.', ok: 'OK',
+    games: n => `${n} saved game${n === 1 ? '' : 's'}`,
+    replace: games => `Replace the saved games in this browser with the ${games} in this backup?`,
+    restore: 'Restore', cancel: 'Cancel', restored: games => `Restored ${games}.`,
+    restoreFailed: 'The backup could not be restored. Browser storage may be unavailable.',
+  },
+  fr: {
+    download: size => `${size} à télécharger`, stored: 'Stockée sur cet appareil', of: (a, b) => `${a} sur ${b}`,
+    loadingEdition: name => `Chargement de ${name}…`, starting: name => `Démarrage de ${name}…`,
+    leave: 'Revenir au menu des éditions ? Tout ce qui suit votre dernière sauvegarde sera perdu.', yes: 'Oui', no: 'Non',
+    backToEditions: 'Retour aux éditions', stopped: message => `Le jeu s’est arrêté : ${message}`,
+    closed: 'Jeu fermé. Vos parties sauvegardées restent dans ce navigateur.',
+    noStorage: 'Le stockage du navigateur est indisponible. Exportez vos sauvegardes avant de partir.',
+    missing: 'Les fichiers du jeu sont introuvables.', damaged: 'Les fichiers téléchargés sont endommagés. Réessayez.',
+    interrupted: 'Le téléchargement a été interrompu. Réessayez.',
+    offline: 'Impossible de télécharger les fichiers du jeu. Vérifiez votre connexion et réessayez.',
+    oldBrowser: 'Ce navigateur est trop ancien pour décompresser les fichiers du jeu.',
+    engineOffline: 'Impossible de télécharger le jeu. Vérifiez votre connexion et réessayez.',
+    noWasm: 'Ce navigateur ne prend pas en charge WebAssembly.',
+    guideFailed: 'Impossible de charger la solution. <a href="walkthrough.fr.html" target="_blank" rel="noopener">Ouvrez-la dans un nouvel onglet</a>.',
+    savesCount: n => `Parties sauvegardées : ${n}`, noSaves: 'Aucune partie sauvegardée',
+    notBackup: 'Ce fichier n’est pas une copie de sauvegardes de Fade.', ok: 'OK',
+    games: n => `${n} partie${n === 1 ? '' : 's'} sauvegardée${n === 1 ? '' : 's'}`,
+    replace: games => `Remplacer les parties sauvegardées dans ce navigateur par les ${games} de cette copie ?`,
+    restore: 'Restaurer', cancel: 'Annuler', restored: games => `${games[0].toUpperCase()}${games.slice(1)} : restauration terminée.`,
+    restoreFailed: 'Impossible de restaurer la copie. Le stockage du navigateur est peut-être indisponible.',
+  },
+};
+const t = (key, ...args) => { const m = MESSAGES[lang][key]; return typeof m === 'function' ? m(...args) : m; };
+const locale = () => (lang === 'fr' ? 'fr-FR' : undefined);
+const mib = bytes => `${(bytes / 2 ** 20).toLocaleString(locale(), { maximumFractionDigits: bytes < 100 * 2 ** 20 ? 1 : 0, minimumFractionDigits: bytes < 100 * 2 ** 20 ? 1 : 0 })} ${lang === 'fr' ? 'Mo' : 'MB'}`;
 
 // ---- Pocket PC clock and date ------------------------------------------------------------
 function tick() {
   const now = new Date();
-  const time = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const time = now.toLocaleTimeString(locale(), { hour: 'numeric', minute: '2-digit' });
   for (const clock of document.querySelectorAll('.clock')) clock.textContent = time;
-  $('#today-date').textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  $('#today-date').textContent = now.toLocaleDateString(locale(), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 }
 tick();
 setInterval(tick, 15000);
@@ -45,22 +109,51 @@ function setLcd(on) {
   device.classList.toggle('lcd', on);
   if (running && game) game._port_set_lcd(on ? 1 : 0);
 }
+function bindLcdChecks() {
+  for (const box of document.querySelectorAll('.lcd-check')) {
+    box.checked = lcd;
+    box.onchange = () => setLcd(box.checked);
+  }
+}
 setLcd(lcd);
-for (const box of document.querySelectorAll('.lcd-check')) box.onchange = () => setLcd(box.checked);
+bindLcdChecks();
 // The power button on top of the device, and the fullscreen dock, switch the filter.
 for (const b of document.querySelectorAll('.lcd-toggle, #power')) b.onclick = () => setLcd(!lcd);
 
-// ---- game text language: ?lang=fr|en, otherwise the last choice in this browser ----------------
-// The flags behave like a Pocket PC toolbar's toggle buttons: the current language stays pressed.
-let lang = (params.get('lang') || store.get('fade-lang')) === 'fr' ? 'fr' : 'en';
+// ---- language flags, like a Pocket PC toolbar's toggle buttons: the current language stays pressed --
+const english = new Map();   // element -> [innerHTML, aria-label, title] as written in index.html
+for (const el of document.querySelectorAll('[data-i18n], [data-i18n-label]'))
+  english.set(el, [el.innerHTML, el.getAttribute('aria-label'), el.getAttribute('title')]);
+const helpDoc = $('#help-doc');
+const helpEnglish = helpDoc.innerHTML;
 const flags = document.querySelectorAll('.flag');
-function setLang(code) {
-  lang = code;
-  for (const flag of flags) flag.setAttribute('aria-checked', String(flag.dataset.lang === code));
+let sizes = null;   // [classic, remastered] bytes still to download, for relabelling
+function applyLanguage() {
+  document.documentElement.lang = lang;
+  for (const [el, [html, label, title]] of english) {
+    const fr = lang === 'fr' && FR[el.dataset.i18n || el.dataset.i18nLabel];
+    if (el.dataset.i18n) el.innerHTML = fr || html;
+    if (el.dataset.i18nLabel) {
+      if (label !== null) el.setAttribute('aria-label', fr || label);
+      if (title !== null) el.setAttribute('title', fr || title);
+    }
+  }
+  helpDoc.innerHTML = lang === 'fr' ? $('#help-fr').innerHTML : helpEnglish;
+  for (const flag of flags) flag.setAttribute('aria-checked', String(flag.dataset.lang === lang));
+  $('#walk-tab').href = guideUrl();
+  guideLoaded = null;   // the walkthrough reloads in the new language when next opened
+  if (sizes) showSizes();
+  tick();
 }
-setLang(lang);
 for (const flag of flags) {
-  flag.onclick = () => { setLang(flag.dataset.lang); store.set('fade-lang', lang); };
+  flag.onclick = () => {
+    if (flag.dataset.lang === lang) return;
+    lang = flag.dataset.lang;
+    store.set('fade-lang', lang);
+    applyLanguage();
+    bindLcdChecks();
+    showSaves();
+  };
   flag.onkeydown = event => {
     if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
     const other = [...flags].find(f => f !== flag);
@@ -77,12 +170,17 @@ const walkMenu = $('#walk-menu');
 const walkContents = $('#walk-contents');
 let overlay = null;          // name of the open screen
 let guideLoaded = null;
+const guideUrl = () => (lang === 'fr' ? 'walkthrough.fr.html' : 'walkthrough.html');
 
 function loadGuide() {
-  guideLoaded ??= fetch('walkthrough.html').then(r => {
+  if (guideLoaded) return;
+  walkMenu.replaceChildren();
+  walkDoc.innerHTML = `<p class="doc-loading">${lang === 'fr' ? FR.guideLoading : 'Loading walkthrough…'}</p>`;
+  const loaded = guideLoaded = fetch(guideUrl()).then(r => {
     if (!r.ok) throw new Error();
     return r.text();
   }).then(html => {
+    if (loaded !== guideLoaded) return;   // the language changed while it loaded
     const main = new DOMParser().parseFromString(html, 'text/html').querySelector('main');
     walkDoc.replaceChildren(...[...main.childNodes].map(node => document.importNode(node, true)));
     // Chapter menu from the guide's sections.
@@ -97,8 +195,9 @@ function loadGuide() {
       return item;
     }));
   }).catch(() => {
+    if (loaded !== guideLoaded) return;
     guideLoaded = null;
-    walkDoc.innerHTML = '<p class="doc-loading">The walkthrough could not be loaded. <a href="walkthrough.html" target="_blank" rel="noopener">Open it in a new tab</a>.</p>';
+    walkDoc.innerHTML = `<p class="doc-loading">${t('guideFailed')}</p>`;
   });
 }
 function scrollDocTo(target) {
@@ -179,8 +278,7 @@ function goHome() {
     if (game || failed || params.has('edition') || params.has('version')) location.href = location.pathname;
     return;
   }
-  notify('Return to the edition menu? Anything since your last save will be lost.',
-    [['Yes', () => { location.href = location.pathname; }], ['No', null]]);
+  notify(t('leave'), [[t('yes'), () => { location.href = location.pathname; }], [t('no'), null]]);
 }
 const actions = {
   home: goHome,
@@ -294,7 +392,7 @@ const partUrl = part => new URL(`data/${part.file}`, location.href).href;
 
 async function loadIndex() {
   const response = await fetch('data/packs.json', { cache: 'no-cache' });
-  if (!response.ok) throw new Error('The game files could not be found.');
+  if (!response.ok) throw new Error(t('missing'));
   packs = await response.json();
   const cache = await openCache();
   const current = new Set([...packs.classic.parts, ...packs.remastered.parts].map(partUrl));
@@ -307,9 +405,14 @@ async function loadIndex() {
   }
   const missing = list => list.filter(pack => pack.parts.some(part => !stored.has(partUrl(part))))
     .reduce((sum, pack) => sum + pack.bytes, 0);
-  const label = bytes => bytes ? `${mib(bytes)} download` : 'Stored on this device';
-  $('#size-classic').textContent = label(missing([packs.classic]));
-  $('#size-remastered').textContent = label(missing([packs.classic, packs.remastered]));
+  sizes = [missing([packs.classic]), missing([packs.classic, packs.remastered])];
+  showSizes();
+}
+
+function showSizes() {
+  const label = bytes => (bytes ? t('download', mib(bytes)) : t('stored'));
+  $('#size-classic').textContent = label(sizes[0]);
+  $('#size-remastered').textContent = label(sizes[1]);
 }
 
 async function readBody(response, expected, progress) {
@@ -319,12 +422,12 @@ async function readBody(response, expected, progress) {
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
-    if (received + value.length > expected) throw new Error('The downloaded game files are damaged. Try again.');
+    if (received + value.length > expected) throw new Error(t('damaged'));
     bytes.set(value, received);
     received += value.length;
     progress(value.length);
   }
-  if (received !== expected) throw new Error('The download was interrupted. Try again.');
+  if (received !== expected) throw new Error(t('interrupted'));
   return bytes;
 }
 
@@ -340,16 +443,16 @@ async function fetchPart(cache, part, target, offset, progress) {
   }
   if (!body) {
     const response = await fetch(url).catch(() => null);
-    if (!response || !response.ok || !response.body) throw new Error('The game files could not be downloaded. Check your connection and try again.');
+    if (!response || !response.ok || !response.body) throw new Error(t('offline'));
     body = await readBody(response, part.bytes, progress);
     if (cache) cache.put(url, new Response(body, { headers: { 'Content-Type': 'application/octet-stream' } })).catch(() => {});
   }
   let raw = body;
   if (part.gzip) {
-    if (!window.DecompressionStream) throw new Error('This browser is too old to unpack the game files.');
+    if (!window.DecompressionStream) throw new Error(t('oldBrowser'));
     raw = new Uint8Array(await new Response(new Blob([body]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
   }
-  if (raw.length !== part.size) throw new Error('The downloaded game files are damaged. Try again.');
+  if (raw.length !== part.size) throw new Error(t('damaged'));
   target.set(raw, offset);
 }
 
@@ -394,7 +497,7 @@ function fail(message) {
   bar.hidden = true;
   detail.textContent = '';
   retry.hidden = false;
-  retry.textContent = 'Back to editions';
+  retry.textContent = t('backToEditions');
   retry.onclick = () => { location.href = location.pathname; };
 }
 
@@ -403,7 +506,7 @@ function loadScript(src) {
     const script = document.createElement('script');
     script.src = src;
     script.onload = resolve;
-    script.onerror = () => reject(new Error('The game could not be downloaded. Check your connection and try again.'));
+    script.onerror = () => reject(new Error(t('engineOffline')));
     document.head.append(script);
   });
 }
@@ -412,13 +515,13 @@ async function start(edition) {
   if (running) return;
   running = true;
   const remastered = edition === 'remastered';
-  const name = remastered ? 'Remastered' : 'Classic';
+  const name = lang === 'fr' ? FR[edition] : remastered ? 'Remastered' : 'Classic';
   document.title = `Fade · ${name}`;
-  showLoading(`Loading ${name}…`);
+  showLoading(t('loadingEdition', name));
   bar.hidden = false;
   bar.classList.remove('indeterminate');
   try {
-    if (!window.WebAssembly) throw new Error('This browser does not support WebAssembly.');
+    if (!window.WebAssembly) throw new Error(t('noWasm'));
     if (!packs) await loadIndex();
     const wanted = remastered ? [packs.classic, packs.remastered] : [packs.classic];
     const total = wanted.reduce((sum, p) => sum + p.bytes, 0);
@@ -427,10 +530,10 @@ async function start(edition) {
     const buffers = await fetchPacks(wanted, n => {
       received += n;
       barFill.style.width = `${(received / total) * 100}%`;
-      detail.textContent = `${mib(received)} of ${mib(total)}`;
+      detail.textContent = t('of', mib(received), mib(total));
     });
     await engine;
-    status.textContent = `Starting ${name}…`;
+    status.textContent = t('starting', name);
     detail.textContent = '';
     bar.classList.add('indeterminate');
     game = await window.createFade({
@@ -455,19 +558,19 @@ async function start(edition) {
         FS.mount(module.IDBFS, { autoPersist: true }, '/saves');
         module.addRunDependency('restore-saves');
         FS.syncfs(true, err => {
-          if (err) detail.textContent = 'Browser storage is unavailable. Download a save backup before leaving.';
+          if (err) detail.textContent = t('noStorage');
           module.removeRunDependency('restore-saves');
         });
       }],
-      onAbort: message => fail(`The game stopped: ${message}`),
+      onAbort: message => fail(t('stopped', message)),
       onExit: () => {
         running = false;
         canvas.hidden = true;
-        showLoading('Game closed. Your saved games are kept in this browser.');
+        showLoading(t('closed'));
         device.dataset.state = 'off';
         bar.hidden = true;
         retry.hidden = false;
-        retry.textContent = 'Back to editions';
+        retry.textContent = t('backToEditions');
         retry.onclick = () => { location.href = location.pathname; };
       },
       print: text => console.info(text),
@@ -532,7 +635,7 @@ const readSaves = () => (game && running ? Promise.resolve(readRunningSaves()) :
 async function showSaves() {
   const files = await readSaves();
   const count = Object.keys(files).filter(name => name.startsWith('save/')).length;
-  $('#saves-count').textContent = count ? `Saved games: ${count}` : 'No saved games yet';
+  $('#saves-count').textContent = count ? t('savesCount', count) : t('noSaves');
   backup.disabled = !Object.keys(files).length;
 }
 showSaves();
@@ -584,22 +687,22 @@ restoreFile.onchange = async () => {
   if (!file) return;
   let files;
   try { files = parseBackup(await file.text()); } catch {
-    notify('That file is not a Fade save backup.', [['OK', null]]);
+    notify(t('notBackup'), [[t('ok'), null]]);
     return;
   }
   const count = Object.keys(files).filter(name => name.startsWith('save/')).length;
-  const games = `${count} saved game${count === 1 ? '' : 's'}`;
-  notify(`Replace the saved games in this browser with the ${games} in this backup?`, [
-    ['Restore', async () => {
+  const games = t('games', count);
+  notify(t('replace', games), [
+    [t('restore'), async () => {
       try {
         await writeStoredSaves(files);
         await showSaves();
-        notify(`Restored ${games}.`, [['OK', null]]);
+        notify(t('restored', games), [[t('ok'), null]]);
       } catch {
-        notify('The backup could not be restored. Browser storage may be unavailable.', [['OK', null]]);
+        notify(t('restoreFailed'), [[t('ok'), null]]);
       }
     }],
-    ['Cancel', null],
+    [t('cancel'), null],
   ]);
 };
 
@@ -615,5 +718,8 @@ backup.onclick = async () => {
 };
 
 window.addEventListener('error', event => {
-  if (running && event.error) fail(`The game stopped: ${event.error.message}`);
+  if (running && event.error) fail(t('stopped', event.error.message));
 });
+
+applyLanguage();
+bindLcdChecks();

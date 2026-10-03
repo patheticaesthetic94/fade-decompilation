@@ -118,9 +118,13 @@ is a launcher option.
 
 ## Language
 
-The flags beside **Language** on the Home menu (or `?lang=fr` / `?lang=en`) starts either edition
-with the French release's text. The choice is remembered in `localStorage` and
-applies at the next start. The player sets `FADE_LANG=fr`, and `port/src/files.c`
+The flags beside **Language** on the Home menu (or `?lang=fr` / `?lang=en`) choose
+English or French. The choice is remembered in `localStorage`. It switches the device's
+text, the Help screen, dates and the walkthrough at once (`player.js` keeps the English in
+`index.html` and swaps `[data-i18n]` elements; Help's French copy is a `<template>`), and
+the game text when an edition next starts. `web/walkthrough.fr.md` is the French guide,
+using the French game's action and object names; `tools/walkthrough_html.py` (needs the
+`markdown` package) renders both guides to the committed HTML pages. The player sets `FADE_LANG=fr`, and `port/src/files.c`
 then looks up `lang/fr/<path>` before `<path>`. `tools/stage_assets.py` stages
 `lang/fr/Data/*.Fad` into the Classic download (about 0.9 MB), so Remastered uses it
 too. Saves are shared between languages. See [LANGUAGES.md](LANGUAGES.md).

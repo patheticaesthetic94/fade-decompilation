@@ -6,7 +6,7 @@ import sys
 
 site = Path(sys.argv[1] if len(sys.argv) > 1 else 'build/web')
 for name in ('index.html', 'play.html', 'site.css', 'player.js', 'today.jpg', 'fade-icon.png',
-             'walkthrough.html', 'walkthrough.md', 'fade.js', 'fade.wasm', 'data/packs.json'):
+             'walkthrough.html', 'walkthrough.md', 'walkthrough.fr.html', 'walkthrough.fr.md', 'fade.js', 'fade.wasm', 'data/packs.json'):
     assert (site / name).is_file() and (site / name).stat().st_size > 0, f'Missing {name}'
 assert (site / '.nojekyll').is_file(), 'Missing .nojekyll'
 assert (site / 'fade.wasm').read_bytes()[:4] == b'\0asm'

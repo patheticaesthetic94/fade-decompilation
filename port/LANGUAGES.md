@@ -41,7 +41,8 @@ format.
 lookup tries `lang/<code>/<path>` first, then `<path>`. `tools/stage_assets.py` stages
 `lang/` into `fade/lang/` and lists it in `files.txt`. The web player sets `FADE_LANG=fr`
 from its Home menu flags or `?lang=fr`. The Android launcher does not offer the
-language yet; the files are packaged, so it only needs to set the variable.
+language yet; the files are packaged, so it only needs to set the variable. The same choice switches the
+web player's device text, Help and walkthrough (`web/walkthrough.fr.md`) to French.
 
 ## Verification
 

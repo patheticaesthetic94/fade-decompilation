@@ -111,8 +111,24 @@ fs.mkdirSync(output, { recursive: true });
       }
       assert(!shots.fr.equals(shots.en), `${mode} French narration differs from English`);
     }
+    // The flags switch the device, Help and walkthrough at once.
     await page.goto(`${base}?lcd=0`);
+    await page.click('.flag[data-lang="fr"]');
+    assert.equal(await page.textContent('.today-title'), 'Choisissez une édition', 'French device text');
+    assert.equal(await page.getAttribute('html', 'lang'), 'fr', 'French page language');
+    await page.click('#today [data-open="help"]');
+    assert(await page.isVisible('#help-doc h2:text("Jouer")'), 'French Help');
+    await page.click('#helpscreen [data-open="guide"]');
+    await page.waitForFunction(() => document.querySelector('#walk-doc h1')?.textContent === 'Fade : la solution pas à pas');
+    assert(await page.locator('#walk-menu button').count() >= 10, 'French walkthrough chapters');
+    await page.screenshot({ path: `${output}/french-walkthrough.png` });
+    await page.click('#walk .ok');
+    await page.screenshot({ path: `${output}/french-launcher.png` });
     await page.click('.flag[data-lang="en"]');
+    assert.equal(await page.textContent('.today-title'), 'Choose an edition', 'English device text');
+    await page.click('#today [data-open="guide"]');
+    await page.waitForFunction(() => document.querySelector('#walk-doc h1')?.textContent === 'Fade: a step-by-step walkthrough');
+    await page.click('#walk .ok');
     assert.equal(await page.getAttribute('.flag[data-lang="en"]', 'aria-checked'), 'true', 'English flag pressed again');
     await page.screenshot({ path: `${output}/launcher.png` });
     // The device's direction pad sends the game's arrow keys.
