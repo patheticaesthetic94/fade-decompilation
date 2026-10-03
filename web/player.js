@@ -14,8 +14,6 @@ const retry = $('#retry');
 const lcdLaunch = $('#lcd-launch');
 const lcdToggle = $('#lcd-toggle');
 const backup = $('#backup');
-const guide = $('#guide');
-const help = $('#help');
 let game = null;
 let packs = null;
 let running = false;
@@ -51,23 +49,93 @@ setLcd(lcd);
 lcdLaunch.onchange = () => setLcd(lcdLaunch.checked);
 lcdToggle.onclick = () => setLcd(!lcd);
 
-// ---- walkthrough and help ----------------------------------------------------------------
-function showGuide(show) {
-  guide.hidden = !show;
-  document.body.classList.toggle('guide-open', show);
-  for (const b of document.querySelectorAll('[data-open="guide"]')) b.setAttribute('aria-expanded', String(show));
-  if (show) {
-    const frame = $('#guide-frame');
-    // Keep the same iframe mounted when closing so the reading position is retained.
-    if (!frame.hasAttribute('src')) frame.src = frame.dataset.src;
-    $('#guide-close').focus();
-  }
-  window.dispatchEvent(new Event('resize'));
+// ---- walkthrough and help: Pocket PC screens drawn over the game --------------------------
+const overlays = { guide: $('#walk'), help: $('#helpscreen') };
+const walkDoc = $('#walk-doc');
+const walkMenu = $('#walk-menu');
+const walkContents = $('#walk-contents');
+let overlay = null;          // name of the open screen
+let guideLoaded = null;
+
+function loadGuide() {
+  guideLoaded ??= fetch('walkthrough.html').then(r => {
+    if (!r.ok) throw new Error();
+    return r.text();
+  }).then(html => {
+    const main = new DOMParser().parseFromString(html, 'text/html').querySelector('main');
+    walkDoc.replaceChildren(...[...main.childNodes].map(node => document.importNode(node, true)));
+    // Chapter menu from the guide's sections.
+    walkMenu.replaceChildren(...[...walkDoc.querySelectorAll('h2')].map(h => {
+      const item = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('role', 'menuitem');
+      button.textContent = h.textContent;
+      button.onclick = () => { showMenu(false); scrollDocTo(h); };
+      item.append(button);
+      return item;
+    }));
+  }).catch(() => {
+    guideLoaded = null;
+    walkDoc.innerHTML = '<p class="doc-loading">The walkthrough could not be loaded. <a href="walkthrough.html" target="_blank" rel="noopener">Open it in a new tab</a>.</p>';
+  });
 }
-for (const b of document.querySelectorAll('[data-open]')) {
-  b.onclick = () => b.dataset.open === 'guide' ? showGuide(guide.hidden) : help.showModal();
+function scrollDocTo(target) {
+  walkDoc.scrollTop = target.getBoundingClientRect().top - walkDoc.getBoundingClientRect().top + walkDoc.scrollTop
+    - parseFloat(getComputedStyle(walkDoc).paddingTop);
+  walkDoc.focus({ preventScroll: true });
 }
-$('#guide-close').onclick = () => showGuide(false);
+// Links inside the guide jump within its own scroller.
+walkDoc.addEventListener('click', event => {
+  const link = event.target.closest('a[href^="#"]');
+  if (!link) return;
+  const target = walkDoc.querySelector(CSS.escape ? `#${CSS.escape(link.hash.slice(1))}` : link.hash);
+  if (target) { event.preventDefault(); scrollDocTo(target); }
+});
+function showMenu(show) {
+  walkMenu.hidden = !show;
+  walkContents.setAttribute('aria-expanded', String(show));
+  if (show) walkMenu.querySelector('button')?.focus();
+}
+walkContents.onclick = () => showMenu(walkMenu.hidden);
+$('#walk-top').onclick = () => { walkDoc.scrollTop = 0; };
+
+function openOverlay(name) {
+  if (overlay === name) return closeOverlay();
+  closeOverlay();
+  overlay = name;
+  overlays[name].hidden = false;
+  if (name === 'guide') loadGuide();
+  for (const b of document.querySelectorAll('.dock [data-open]')) b.setAttribute('aria-pressed', String(b.dataset.open === name));
+  overlays[name].querySelector('.doc').focus({ preventScroll: true });
+}
+function closeOverlay() {
+  if (!overlay) return;
+  showMenu(false);
+  overlays[overlay].hidden = true;   // the scroll position survives: the screen stays mounted
+  overlay = null;
+  for (const b of document.querySelectorAll('.dock [data-open]')) b.setAttribute('aria-pressed', 'false');
+  if (running) canvas.focus();
+}
+for (const b of document.querySelectorAll('[data-open]')) b.addEventListener('click', () => openOverlay(b.dataset.open));
+for (const b of document.querySelectorAll('[data-close]')) b.onclick = closeOverlay;
+
+// While a screen is open, the game does not see the keyboard; keys scroll or close the screen.
+function overlayKey(key) {
+  const doc = overlays[overlay].querySelector('.doc');
+  const step = doc.clientHeight;
+  if (key === 'ArrowUp') doc.scrollBy({ top: -step / 6 });
+  else if (key === 'ArrowDown') doc.scrollBy({ top: step / 6 });
+  else if (key === 'ArrowLeft') doc.scrollBy({ top: -step * 0.9 });
+  else if (key === 'ArrowRight') doc.scrollBy({ top: step * 0.9 });
+  else if (key === 'Enter' || key === 'Escape') closeOverlay();
+}
+window.addEventListener('keydown', event => {
+  if (!overlay || !event.isTrusted) return;
+  event.stopImmediatePropagation();   // registered before the engine's listener, so SDL never sees it
+  if (event.key === 'Escape') { event.preventDefault(); walkMenu.hidden ? closeOverlay() : showMenu(false); }
+}, true);
+window.addEventListener('keyup', event => { if (overlay && event.isTrusted) event.stopImmediatePropagation(); }, true);
 
 // Fullscreen hides the device and scales the game to the display. Without the Fullscreen API
 // (iPhone Safari), the same layout fills the browser window instead.
@@ -111,6 +179,7 @@ for (const button of document.querySelectorAll('[data-key]')) {
   const key = button.dataset.key;
   const pad = button.closest('.dpad');
   let down = false;
+  let toGame = false;   // the key-down went to the game, so its key-up must too
   const press = event => {
     event.preventDefault();
     if (down) return;
@@ -118,14 +187,16 @@ for (const button of document.querySelectorAll('[data-key]')) {
     button.setPointerCapture?.(event.pointerId);
     button.classList.add('pressed');
     if (pad && !button.classList.contains('action')) pad.dataset.tilt = button.className;
-    if (running) sendKey('keydown', key);
+    toGame = !overlay && running;
+    if (toGame) sendKey('keydown', key);
+    else if (overlay) overlayKey(key);
   };
   const release = () => {
     if (!down) return;
     down = false;
     button.classList.remove('pressed');
     if (pad) delete pad.dataset.tilt;
-    if (running) sendKey('keyup', key);
+    if (toGame) sendKey('keyup', key);
   };
   button.addEventListener('pointerdown', press);
   button.addEventListener('pointerup', release);

@@ -98,6 +98,16 @@ fs.mkdirSync(output, { recursive: true });
     await pad.dispatchEvent('pointerup', { pointerId: 1 });
     await page.waitForTimeout(500);
     assert(keys.some(k => k.includes('vk 0x28')), 'Direction pad reaches the game as VK_DOWN');
+    // The walkthrough opens on the device's screen with a chapter menu; the d-pad scrolls it.
+    await page.click('.dock [data-open="guide"]');
+    await page.waitForFunction(() => document.querySelectorAll('#walk-menu button').length >= 10);
+    const screen = await page.locator('#screen').boundingBox();
+    const walk = await page.locator('#walk').boundingBox();
+    assert(Math.abs(walk.x - screen.x) < 2 && Math.abs(walk.width - screen.width) < 2, 'Walkthrough fills the device screen');
+    await pad.dispatchEvent('pointerdown', { pointerId: 1 });
+    await pad.dispatchEvent('pointerup', { pointerId: 1 });
+    assert(await page.evaluate(() => document.querySelector('#walk-doc').scrollTop) > 0, 'Direction pad scrolls the walkthrough');
+    await page.click('#walk .ok');
     // Fullscreen puts the device away and fits the 3:4 game to the display.
     await page.click('#fullscreen');
     await page.waitForTimeout(800);
@@ -110,7 +120,7 @@ fs.mkdirSync(output, { recursive: true });
     await page.goto(base);
     await page.waitForFunction(() => document.querySelector('#size-remastered').textContent === 'Stored on this device');
     assert.deepEqual(errors, [], 'No runtime errors during gameplay or save loading');
-    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons, fullscreen, stored downloads');
+    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons, in-screen walkthrough, fullscreen, stored downloads');
   } finally {
     await browser.close();
   }

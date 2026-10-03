@@ -54,6 +54,36 @@
           </div>
         </section>
 
+        <section class="ppc overlay" id="walk" aria-label="Walkthrough" hidden>
+          <header class="navbar"><span class="start"><i></i>Walkthrough</span><button type="button" class="ok" data-close aria-label="Close walkthrough">ok</button></header>
+          <p class="spoiler">Contains story and puzzle spoilers</p>
+          <article class="doc" id="walk-doc" tabindex="-1"><p class="doc-loading">Loading walkthrough…</p></article>
+          <ul class="menu" id="walk-menu" role="menu" aria-label="Chapters" hidden></ul>
+          <footer class="cmdbar"><button type="button" id="walk-contents" aria-haspopup="menu" aria-expanded="false">Contents</button><button type="button" id="walk-top">Top</button><a href="walkthrough.html" target="_blank" rel="noopener">New tab ↗</a></footer>
+        </section>
+
+        <section class="ppc overlay" id="helpscreen" aria-label="Help" hidden>
+          <header class="navbar"><span class="start"><i></i>Help</span><button type="button" class="ok" data-close aria-label="Close help">ok</button></header>
+          <article class="doc" tabindex="-1">
+            <h1>Fade</h1>
+            <p>The 2001 Pocket PC adventure by Fade Team, recompiled from the original game to run natively in your browser.</p>
+            <h2>Controls</h2>
+            <ul>
+              <li>Tap the screen to interact. Tap the lower-right arrow to continue text.</li>
+              <li>The direction pad or arrow keys navigate. Enter / Z, X and C are the hardware buttons.</li>
+              <li>The power button returns to the edition choice.</li>
+              <li>While this screen or the walkthrough is open, the direction pad scrolls it and the action button closes it.</li>
+            </ul>
+            <h2>Editions</h2>
+            <p><b>Classic</b> is the game as released. <b>Remastered</b> adds 4× artwork, outline text and enhanced sound, and is a larger download. Both are stored on this device after the first download.</p>
+            <h2>Screen filter</h2>
+            <p>Recreates a 2001 3.8″ transflective panel: the 240×320 pixel grid with RGB stripes, 65,536 colours, raised blacks and a narrow gamut, an uneven front light and slow pixel response. It can be switched on or off while playing.</p>
+            <h2>Saves</h2>
+            <p>Use the game’s Save command. Saves stay in this browser and are shared by both editions. Clearing site data removes them, and private browsing may not keep them, so download a backup now and then.</p>
+          </article>
+          <footer class="cmdbar"><button type="button" data-open="guide">Walkthrough</button><a href="https://github.com/patheticaesthetic94/fade-decompilation" target="_blank" rel="noopener">Source ↗</a></footer>
+        </section>
+
         <div class="glass" aria-hidden="true"></div>
       </div></div>
     </div>
@@ -76,35 +106,11 @@
 
 <nav class="dock" aria-label="Player controls">
   <button type="button" id="lcd-toggle" aria-pressed="false" title="Pocket PC screen filter"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7v10M12 7v10M16 7v10"/></svg><span>Screen filter</span></button>
-  <button type="button" data-open="guide" aria-expanded="false" aria-controls="guide" title="Walkthrough"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg><span>Walkthrough</span></button>
+  <button type="button" data-open="guide" aria-pressed="false" aria-controls="walk" title="Walkthrough"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg><span>Walkthrough</span></button>
   <button type="button" id="fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg><span>Fullscreen</span></button>
   <button type="button" id="backup" title="Download a backup of your saves" disabled><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Back up saves</span></button>
-  <button type="button" data-open="help" title="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.5M12 17h.01"/></svg><span>Help</span></button>
+  <button type="button" data-open="help" aria-pressed="false" aria-controls="helpscreen" title="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.5M12 17h.01"/></svg><span>Help</span></button>
 </nav>
 
-<aside class="guide" id="guide" aria-label="Walkthrough" hidden>
-  <div class="guide-head"><div><h2>Walkthrough</h2><p>Contains story and puzzle spoilers</p></div><button type="button" id="guide-close">Close</button></div>
-  <a class="guide-tab" href="walkthrough.html" target="_blank" rel="noopener">Open in a new tab ↗</a>
-  <iframe id="guide-frame" title="Fade step-by-step walkthrough" data-src="walkthrough.html"></iframe>
-</aside>
-
-<dialog class="help" id="help">
-  <h2>Fade</h2>
-  <p>The 2001 Pocket PC adventure by Fade Team, recompiled from the original game to run natively in your browser.</p>
-  <h3>Controls</h3>
-  <ul>
-    <li>Click or tap the screen to interact. Tap the lower-right arrow to continue text.</li>
-    <li>Arrow keys or the direction pad navigate. Enter / Z, X and C are the hardware buttons.</li>
-    <li>The power button returns to the edition choice.</li>
-  </ul>
-  <h3>Editions</h3>
-  <p><b>Classic</b> is the game as released. <b>Remastered</b> adds 4× artwork, outline text and enhanced sound, and is a larger download. Downloads are kept by the browser for next time.</p>
-  <h3>Screen filter</h3>
-  <p>Recreates a 2001 3.8″ transflective panel: the 240×320 pixel grid with RGB stripes, 65,536 colours, raised blacks and a narrow gamut, an uneven front light and slow pixel response. It can be switched on or off while playing.</p>
-  <h3>Saves</h3>
-  <p>Use the game’s Save command. Saves stay in this browser and are shared by both editions. Clearing site data removes them, and private browsing may not keep them, so download a backup now and then.</p>
-  <p class="help-links"><a href="https://github.com/patheticaesthetic94/fade-decompilation">Source on GitHub</a></p>
-  <form method="dialog"><button>Close</button></form>
-</dialog>
 </body>
 </html>

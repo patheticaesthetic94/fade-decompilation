@@ -79,8 +79,14 @@ game pixel is `--u`. Clicking or tapping the screen uses the original game
 coordinates. The direction pad sends the arrow keys and Enter; the four application
 buttons send Z, X, C and Escape (the game's hardware buttons). The keyboard works
 too. The power button returns to the launcher. The dock holds the screen-filter
-switch, the walkthrough (beside the device on wide screens, below it on narrow
-ones), fullscreen, save backup and help.
+switch, the walkthrough, fullscreen, save backup and help.
+
+The walkthrough and help open on the device's own screen, over the launcher or the
+running game. They use the same Pocket PC look: a title bar with an **ok** button, a
+scrolling document and a command bar. The walkthrough's **Contents** menu lists its
+chapters. `walkthrough.html` is fetched on first open, and its `<main>` content is
+restyled. While either screen is open, the keyboard and direction pad scroll it
+instead of reaching the game. The action button, Enter or Escape close it.
 
 ## Pocket PC screen filter
 
@@ -118,7 +124,7 @@ slices of the reassembled pack buffer).
 `packs.json` and total deployment size. The workflow also runs `tools/tests/web.cjs`
 in Chromium: the launcher, both editions' menus, gameplay, real game saves,
 restoration after reload, loading a Classic save in Remastered, switching the
-filter while playing, the direction pad reaching the game, fullscreen sizing and
+filter while playing, the direction pad reaching the game, the in-screen walkthrough, fullscreen sizing and
 stored downloads on a repeat visit. Run it locally with:
 
 ```sh

@@ -4,7 +4,6 @@
   --desk-1: #6e6363; --desk-2: #463d3e; --desk-3: #1d1819;
   --ink: #f1e9e5; --muted: #b7a8a4; --accent: #d93a32;
   --ppc-blue-1: #3f7be0; --ppc-blue-2: #0b3c9e; --ppc-select: #2f63c9;
-  --guide-w: 0px;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 * { box-sizing: border-box; }
@@ -22,7 +21,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---- stage + device -------------------------------------------------------------------- */
 .stage {
-  position: fixed; inset: 0 var(--guide-w) 0 0; container-type: size;
+  position: fixed; inset: 0; container-type: size;
   display: grid; place-items: center; transition: right .25s ease;
 }
 .device {
@@ -211,9 +210,63 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @keyframes sweep { from { transform: translateX(-100%); } to { transform: translateX(334%); } }
 .ppc-button { margin-top: calc(8 * var(--u)); padding: calc(3 * var(--u)) calc(14 * var(--u)); font: calc(10 * var(--u)) Tahoma, sans-serif; color: #000; background: #e4e4e4; border: 1px solid #000; box-shadow: inset -1px -1px #808080, inset 1px 1px #fff; }
 
-/* ---- dock, guide, help ----------------------------------------------------------------- */
+/* ---- walkthrough and help screens ------------------------------------------------------ */
+.overlay { z-index: 3; }
+.ok {
+  height: calc(16 * var(--u)); min-width: calc(22 * var(--u)); padding: 0 calc(5 * var(--u)); border-radius: calc(8 * var(--u));
+  border: 1px solid #fff; background: linear-gradient(#4f8ae6, #1446a8); color: #fff;
+  font: 700 calc(9 * var(--u)) / 1 Tahoma, Verdana, sans-serif;
+}
+.ok:hover, .ok:focus-visible { background: #fff; color: var(--ppc-blue-2); outline: none; }
+.spoiler {
+  flex: none; margin: 0; padding: calc(2 * var(--u)) calc(6 * var(--u)); font-size: calc(8 * var(--u));
+  background: #ffffe1; border-bottom: 1px solid #b9b98a; color: #333;
+}
+.doc {
+  flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: calc(4 * var(--u)) calc(7 * var(--u)) calc(10 * var(--u));
+  font-size: calc(9.5 * var(--u)); line-height: 1.32; outline: none; -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin; scrollbar-color: #9a9a9a #e6e6e6;
+}
+.doc::-webkit-scrollbar { width: calc(8 * var(--u)); }
+.doc::-webkit-scrollbar-track { background: #e6e6e6; border-left: 1px solid #c8c8c8; }
+.doc::-webkit-scrollbar-thumb { background: #c8c8c8; border: 1px solid #000; box-shadow: inset -1px -1px #808080, inset 1px 1px #fff; }
+.doc h1 { margin: calc(4 * var(--u)) 0 calc(5 * var(--u)); font-size: calc(13 * var(--u)); line-height: 1.15; color: var(--ppc-blue-2); }
+.doc h2 {
+  margin: calc(12 * var(--u)) 0 calc(4 * var(--u)); padding-bottom: calc(2 * var(--u)); border-bottom: 1px solid #7a8db8;
+  font-size: calc(11 * var(--u)); color: var(--ppc-blue-2); scroll-margin-top: calc(4 * var(--u));
+}
+.doc h3 { margin: calc(9 * var(--u)) 0 calc(2 * var(--u)); font-size: calc(10 * var(--u)); color: #000; }
+.doc p { margin: calc(4 * var(--u)) 0; }
+.doc ul, .doc ol { margin: calc(3 * var(--u)) 0; padding-left: calc(14 * var(--u)); }
+.doc li { margin: calc(2.5 * var(--u)) 0; }
+.doc li::marker { color: var(--ppc-blue-2); }
+.doc a { color: #0000e0; }
+.doc code { font: calc(8.5 * var(--u)) "Courier New", monospace; }
+.doc table { width: 100%; border-collapse: collapse; margin: calc(5 * var(--u)) 0; font-size: calc(8.5 * var(--u)); }
+.doc th, .doc td { padding: calc(2 * var(--u)) calc(3 * var(--u)); border: 1px solid #a0a0a0; text-align: left; vertical-align: top; }
+.doc th { background: #dfe6f4; }
+.doc footer { margin-top: calc(10 * var(--u)); padding-top: calc(4 * var(--u)); border-top: 1px solid #c8c8c8; color: #555; font-size: calc(8 * var(--u)); }
+.doc-loading { color: #555; }
+.cmdbar a { display: flex; align-items: center; padding: 0 calc(8 * var(--u)); color: #000; font-size: calc(10 * var(--u)); text-decoration: none; }
+.cmdbar a:hover, .cmdbar a:focus-visible { background: var(--ppc-select); color: #fff; outline: none; }
+.cmdbar a:last-child { margin-left: auto; }
+.cmdbar button[aria-expanded="true"] { background: var(--ppc-select); color: #fff; }
+/* Pocket PC popup menu, rising from the command bar. */
+.menu {
+  position: absolute; left: calc(2 * var(--u)); bottom: calc(23 * var(--u)); z-index: 2; max-height: calc(250 * var(--u)); overflow: auto;
+  width: calc(190 * var(--u)); margin: 0; padding: 1px; list-style: none; background: #fff; border: 1px solid #000;
+  box-shadow: calc(2 * var(--u)) calc(2 * var(--u)) 0 rgba(0,0,0,.35);
+}
+.menu button {
+  display: block; width: 100%; padding: calc(3 * var(--u)) calc(6 * var(--u)); border: 0; background: none; text-align: left;
+  font: calc(9.5 * var(--u)) / 1.25 Tahoma, Verdana, sans-serif; color: #000;
+}
+.menu button:hover, .menu button:focus-visible { background: var(--ppc-select); color: #fff; outline: none; }
+.menu li + li { border-top: 1px solid #e4e4e4; }
+
+/* ---- dock ----------------------------------------------------------------- */
 .dock {
-  position: fixed; z-index: 10; top: 14px; right: calc(var(--guide-w) + 14px); display: flex; gap: 6px;
+  position: fixed; z-index: 10; top: 14px; right: 14px; display: flex; gap: 6px;
   transition: right .25s ease, opacity .3s;
 }
 .dock button {
@@ -230,39 +283,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .dock button:hover span, .dock button:focus-visible span { opacity: 1; }
 
-.guide {
-  position: fixed; z-index: 20; top: 0; right: 0; bottom: 0; width: min(460px, 100vw); display: flex; flex-direction: column;
-  background: #1b1516; border-left: 1px solid #3d3132; box-shadow: -20px 0 50px rgba(0,0,0,.45);
-}
-.guide-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px 6px; }
-.guide-head h2 { margin: 0; font-size: 1.15rem; }
-.guide-head p { margin: 3px 0 0; font-size: .75rem; color: var(--muted); }
-.guide-head button, .help button { border: 0; border-radius: 6px; padding: .5rem .9rem; background: var(--accent); color: #fff; }
-.guide-tab { padding: 0 18px 12px; font-size: .8rem; color: #f0a49c; }
-.guide iframe { flex: 1; min-height: 0; width: 100%; border: 0; background: #f2f1ed; }
-
-.help {
-  width: min(520px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); overflow: auto; padding: 22px 26px;
-  border: 1px solid #3d3132; border-radius: 12px; background: #1b1516; color: var(--ink); line-height: 1.55; font-size: .92rem;
-}
-.help::backdrop { background: rgba(0,0,0,.55); backdrop-filter: blur(2px); }
-.help h2 { margin: 0 0 6px; font: 400 1.9rem Georgia, serif; letter-spacing: .14em; }
-.help h3 { margin: 18px 0 4px; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: #f0a49c; }
-.help p, .help ul { margin: 0 0 6px; color: #d8ccc8; }
-.help ul { padding-left: 1.1rem; }
-.help a { color: #f0a49c; }
-.help form { margin-top: 16px; text-align: right; }
-
-@media (min-width: 900px) { body.guide-open { --guide-w: min(460px, 40vw); } body.guide-open .guide { width: var(--guide-w); } }
-@media (max-width: 899px) {
-  body.guide-open .guide { top: auto; height: 58dvh; width: 100%; border-left: 0; border-top: 1px solid #3d3132; border-radius: 14px 14px 0 0; }
-  body.guide-open .stage { bottom: 58dvh; }
-}
 @media (max-width: 600px) {
   .dock { top: auto; bottom: max(10px, env(safe-area-inset-bottom)); right: 50%; transform: translateX(50%); }
   .dock span { display: none; }
   .stage { bottom: 58px; }
-  body.guide-open .dock { display: none; }
 }
 /* Fullscreen: the device is put away and the panel fills the display at its 3:4 shape. */
 body.fs { background: #000; }
@@ -275,5 +299,5 @@ body.fs .screen { --u: min(calc(100vw / 240), calc(100dvh / 320)); width: calc(2
 body.fs .glass { display: none; }
 body.fs .dock { opacity: 0; }
 body.fs .dock:hover, body.fs .dock:focus-within, body.fs.pointer-active .dock { opacity: 1; }
-body.fs.guide-open .dock { opacity: 1; }
+
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
