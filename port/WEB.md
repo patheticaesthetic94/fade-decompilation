@@ -116,6 +116,15 @@ response). It is then drawn at 4× with vertical RGB stripes and the black matri
 between cells. On the web `port_set_lcd()` switches it while playing; on Android it
 is a launcher option.
 
+## Language
+
+**French text** on the Home menu (or `?lang=fr` / `?lang=en`) starts either edition
+with the French release's text. The choice is remembered in `localStorage` and
+applies at the next start. The player sets `FADE_LANG=fr`, and `port/src/files.c`
+then looks up `lang/fr/<path>` before `<path>`. `tools/stage_assets.py` stages
+`lang/fr/Data/*.Fad` into the Classic download (about 0.9 MB), so Remastered uses it
+too. Saves are shared between languages. See [LANGUAGES.md](LANGUAGES.md).
+
 ## Saves
 
 Use the game's Save command. `/saves` is restored from IndexedDB before WinMain

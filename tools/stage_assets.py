@@ -2,7 +2,8 @@
 """Stage the combined Classic + Remastered game data used by the APK and the web build.
 
 Layout (paths are what the runtime opens):
-  fade/      original encoded resources, bitmap fonts and sounds (Classic, and shared by both)
+  fade/      original encoded resources, bitmap fonts and sounds (Classic, and shared by both),
+             plus fade/lang/<code>/Data text that FADE_LANG=<code> prefers (port/LANGUAGES.md)
   hd/        verified 4x artwork plus hd/files.txt (encoded name -> PNG)
   fonts/     outline fonts, licences and runtime.txt for the native text engine
   hdaudio/   verified 48 kHz sounds under the original encoded names
@@ -42,6 +43,12 @@ def stage_original(stage, source):
         target = fade / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(p, target)
+        names.append(rel)
+    # Translations replace only their own files; the engine looks them up under lang/<code>/ first.
+    for p in sorted((ROOT / 'lang').rglob('*.Fad')):
+        rel = p.relative_to(ROOT).as_posix()
+        (fade / rel).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(p, fade / rel)
         names.append(rel)
     (fade / 'files.txt').write_text(''.join(n + '\n' for n in names))
     return len(names)

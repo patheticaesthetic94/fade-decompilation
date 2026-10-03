@@ -2,7 +2,8 @@
 // Game paths look like "\Program Files\fade\menu\CSRXMRYI.IFJ": the install-dir prefix is dropped and the
 // rest is looked up case-insensitively in the packaged data (fade/files.txt lists it). Data files are
 // opened as private in-memory copies (LoadImageFile un-XORs image headers in place and writes them
-// back); files under save/ live in SDL_GetPrefPath() and persist.
+// back); files under save/ live in SDL_GetPrefPath() and persist. FADE_LANG=xx prefers packaged
+// lang/xx/<path> over <path>, so a translation replaces only the files it ships (data/*.fad).
 #include "port.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +14,7 @@
 #define INVALID_HANDLE 0xffffffffu
 
 static char *pref_dir;
+static char lang_prefix[16];
 static struct { char *lower, *real; } *index_;
 static int nindex;
 
@@ -42,7 +44,10 @@ void files_init(void)
     }
     SDL_free(list);
     qsort(index_, nindex, sizeof *index_, idx_cmp);
-    port_log("data: %d files, saves in %s", nindex, pref_dir);
+    const char *lang = SDL_getenv("FADE_LANG");
+    if (lang && SDL_strlen(lang) == 2 && SDL_isalpha(lang[0]) && SDL_isalpha(lang[1]) && SDL_strcasecmp(lang, "en"))
+        SDL_snprintf(lang_prefix, sizeof lang_prefix, "lang/%c%c/", SDL_tolower(lang[0]), SDL_tolower(lang[1]));
+    port_log("data: %d files, saves in %s%s%s", nindex, pref_dir, *lang_prefix ? ", overrides " : "", lang_prefix);
 }
 
 char *files_wide_to_utf8(const wchar16 *w)
@@ -99,15 +104,22 @@ static const char *find_data(const char *lower)
     return NULL;
 }
 
-SDL_RWops *files_open_asset(const char *rel_lower)
+static const char *find_asset(const char *prefix, const char *rel_lower)
 {
-    const char *real = find_data(rel_lower);
     char tmp[512];
+    SDL_snprintf(tmp, sizeof tmp - 4, "%s%s", prefix, rel_lower);
+    const char *real = find_data(tmp);
     if (!real) {
-        SDL_strlcpy(tmp, rel_lower, sizeof tmp - 4);
         mangle(tmp);
         real = find_data(tmp);
     }
+    return real;
+}
+
+SDL_RWops *files_open_asset(const char *rel_lower)
+{
+    const char *real = *lang_prefix ? find_asset(lang_prefix, rel_lower) : NULL;
+    if (!real) real = find_asset("", rel_lower);
     if (!real) return NULL;
     char full[600];
     // Combined packages keep the remastered sounds beside the originals (same encoded names).

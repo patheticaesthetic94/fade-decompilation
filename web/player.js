@@ -49,6 +49,13 @@ for (const box of document.querySelectorAll('.lcd-check')) box.onchange = () => 
 // The power button on top of the device, and the fullscreen dock, switch the filter.
 for (const b of document.querySelectorAll('.lcd-toggle, #power')) b.onclick = () => setLcd(!lcd);
 
+// ---- game text language: ?lang=fr|en, otherwise the last choice in this browser ----------------
+let lang = (params.get('lang') || store.get('fade-lang')) === 'fr' ? 'fr' : 'en';
+for (const box of document.querySelectorAll('.lang-check')) {
+  box.checked = lang === 'fr';
+  box.onchange = () => { lang = box.checked ? 'fr' : 'en'; store.set('fade-lang', lang); };
+}
+
 // ---- walkthrough and help: Pocket PC screens drawn over the game --------------------------
 const overlays = { guide: $('#walk'), help: $('#helpscreen') };
 const walkDoc = $('#walk-doc');
@@ -428,6 +435,7 @@ async function start(edition) {
         });
         module.ENV.FADE_EDITION = edition;
         module.ENV.FADE_LCD = lcd ? '1' : '0';
+        if (lang === 'fr') module.ENV.FADE_LANG = 'fr';
         if (params.has('trace')) module.ENV.FADE_TRACE = '1';
         FS.mkdir('/saves');
         FS.mount(module.IDBFS, { autoPersist: true }, '/saves');

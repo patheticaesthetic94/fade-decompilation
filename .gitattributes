@@ -13,3 +13,4 @@ port/resources/fonts/*.ttf -text
 port/android/app/src/main/res/mipmap-nodpi/*.png -text
 port/android/gradle/wrapper/gradle-wrapper.jar -text
 port/android/app/src/main/res/drawable-nodpi/*.png -text
+lang/** -text

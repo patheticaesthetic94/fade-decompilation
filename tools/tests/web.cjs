@@ -1,5 +1,5 @@
 // Browser regression: in-screen launcher, real menus, gameplay, save/reload, cross-edition saves,
-// the live screen filter and the device's hardware buttons.
+// French text, the live screen filter and the device's hardware buttons.
 // NODE_PATH=build/web-test/node_modules node tools/tests/web.cjs
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -17,8 +17,11 @@ fs.mkdirSync(output, { recursive: true });
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
-    async function launch(mode) {
-      await page.goto(`${base}?lcd=0`);
+    const logs = [];
+    page.on('console', m => logs.push(m.text()));
+    async function launch(mode, query = '') {
+      logs.length = 0;
+      await page.goto(`${base}?lcd=0${query}`);
       await page.click(`.edition[data-edition="${mode}"]`);
       await page.waitForFunction(() => window.game?.HEAPU8?.[0x474b1] === 1, null, { timeout: 180000 });
       assert.deepEqual(errors, [], 'Browser runtime errors');
@@ -87,6 +90,30 @@ fs.mkdirSync(output, { recursive: true });
     assert(!plain.equals(await frame()), 'Screen filter changes the rendered panel');
     await page.screenshot({ path: `${output}/hd-filter.png` });
     await page.click('#power');
+    // French: same engine and scripts with text from lang/fr, chosen by ?lang= or the Home checkbox.
+    const sceneText = () => page.locator('#canvas').screenshot();
+    for (const mode of ['classic', 'remastered']) {
+      const shots = {};
+      for (const lang of ['en', 'fr']) {
+        if (mode === 'remastered') {
+          await page.goto(`${base}?lcd=0`);
+          if (await page.isChecked('#lang-launch') !== (lang === 'fr')) await page.click('#lang-launch');
+          await launch(mode);
+        } else {
+          await launch(mode, `&lang=${lang}`);
+        }
+        assert.equal(logs.some(line => line.includes('overrides lang/fr/')), lang === 'fr', `${mode} ${lang} text`);
+        await tap(120, 20);
+        assert.equal(await page.evaluate(() => game.HEAPU8[0x48688]), 1, `${mode} ${lang} New Game`);
+        await page.waitForTimeout(1500);
+        shots[lang] = await sceneText();
+        fs.writeFileSync(`${output}/${mode}-scene-${lang}.png`, shots[lang]);
+      }
+      assert(!shots.fr.equals(shots.en), `${mode} French narration differs from English`);
+    }
+    await page.goto(`${base}?lcd=0`);
+    await page.click('#lang-launch');
+    assert(!(await page.isChecked('#lang-launch')), 'French text switched back off');
     // The device's direction pad sends the game's arrow keys.
     const keys = [];
     page.on('console', m => { if (m.text().includes('key down')) keys.push(m.text()); });
@@ -148,7 +175,7 @@ fs.mkdirSync(output, { recursive: true });
     assert.deepEqual(await saves(), saved, 'Restored backup is the game\'s saves');
     assert.deepEqual(errors, [], 'No runtime errors or browser dialogs');
     assert.deepEqual(errors, [], 'No runtime errors during gameplay or save loading');
-    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons, in-screen walkthrough, Home balloon, fullscreen, stored downloads, save backup and restore from the edition menu');
+    console.log('PASS: launcher, Classic/Remastered menus, French text, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons, in-screen walkthrough, Home balloon, fullscreen, stored downloads, save backup and restore from the edition menu');
   } finally {
     await browser.close();
   }

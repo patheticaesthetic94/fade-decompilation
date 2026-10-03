@@ -42,6 +42,8 @@ Whilst the game can be enjoyed in it's original resolution using all of it's ori
 
 - **Native** and pre-built for web and Android devices. This is not emulation or a virtual machine. This is the game running on device as though it was made for it.
 
+- **French text** (web) from the original French release, grafted onto the fixed 1.09 scripts. Tick **French text** on the web player's Home menu; saves work in both languages. See [port/LANGUAGES.md](port/LANGUAGES.md).
+
 - **Removed loading** from the beginning of the game which on an emulator or real device could take minutes.
 
 ## Build
@@ -72,6 +74,7 @@ The key and keystore use the same password. Output: `build/releases/fade-android
 - `decomp/`: recovered game source and types used by the source generator.
 - `port/`: native runtime, fixups, Android project, app icon, fonts, and third-party headers/notices.
 - `extracted/`: original encoded resources and executable data image required at runtime.
+- `lang/fr/Data/`: French game text that replaces `extracted/Data` when `FADE_LANG=fr`.
 - `hd-assets/`, `hd-audio/`: Remastered resources and manifests, verified and staged by `tools/stage_assets.py`.
 - `tools/`: source generation, compiler correction, asset staging, and build scripts.
 
