@@ -74,8 +74,8 @@ domains both work. The site is https://patheticaesthetic94.github.io/fade-decomp
 
 ## The device and its controls
 
-The Pocket PC is drawn in CSS. It is zoomed so that the top of the case and its bottom
-curve fall outside the window, while the screen, direction pad and buttons stay in
+The Pocket PC is drawn in CSS. It is zoomed so that the top of the case (speaker grille and
+LED) and its bottom curve fall outside the window, while the screen, direction pad and buttons stay in
 view. One game pixel is `--u`. Clicking or tapping the screen uses the original game
 coordinates. The direction pad sends the arrow keys and Enter, and the keyboard
 works too (Z, X and C are the game's other hardware buttons). The four front

@@ -25,10 +25,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
   display: grid; place-items: center; place-content: center; overflow: hidden;
 }
 .device {
-  /* Zoomed in: about 60u of the top (speaker, LED) and the bottom curve fall outside the window,
+  /* Zoomed in: the top of the case (speaker, LED, about 72u) and the bottom curve fall outside the window,
      leaving the screen, the d-pad and the four buttons in view. */
-  --u: min(calc(100cqh / 522), calc((100cqw - 16px) / 344));
-  transform: translateY(calc(-17 * var(--u)));
+  --u: min(calc(100cqh / 504), calc((100cqw - 16px) / 344));
+  transform: translateY(calc(-27 * var(--u)));
   position: relative; width: calc(344 * var(--u));
   padding: calc(20 * var(--u)) 0 calc(26 * var(--u));
   border-radius: calc(46 * var(--u)) calc(46 * var(--u)) calc(70 * var(--u)) calc(70 * var(--u)) / calc(40 * var(--u)) calc(40 * var(--u)) calc(92 * var(--u)) calc(92 * var(--u));
