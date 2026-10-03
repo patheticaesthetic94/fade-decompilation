@@ -42,7 +42,7 @@ Whilst the game can be enjoyed in it's original resolution using all of it's ori
 
 - **Native** and pre-built for web and Android devices. This is not emulation or a virtual machine. This is the game running on device as though it was made for it.
 
-- **French text** (web) from the original French release, grafted onto the fixed 1.09 scripts. Tick **French text** on the web player's Home menu; saves work in both languages. See [port/LANGUAGES.md](port/LANGUAGES.md).
+- **French text** (web) from the original French release, grafted onto the fixed 1.09 scripts. Pick the French flag beside **Language** on the web player's Home menu; saves work in both languages. See [port/LANGUAGES.md](port/LANGUAGES.md).
 
 - **Removed loading** from the beginning of the game which on an emulator or real device could take minutes.
 

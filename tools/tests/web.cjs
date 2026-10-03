@@ -90,14 +90,14 @@ fs.mkdirSync(output, { recursive: true });
     assert(!plain.equals(await frame()), 'Screen filter changes the rendered panel');
     await page.screenshot({ path: `${output}/hd-filter.png` });
     await page.click('#power');
-    // French: same engine and scripts with text from lang/fr, chosen by ?lang= or the Home checkbox.
+    // French: same engine and scripts with text from lang/fr, chosen by ?lang= or the Home menu's flags.
     const sceneText = () => page.locator('#canvas').screenshot();
     for (const mode of ['classic', 'remastered']) {
       const shots = {};
       for (const lang of ['en', 'fr']) {
         if (mode === 'remastered') {
           await page.goto(`${base}?lcd=0`);
-          if (await page.isChecked('#lang-launch') !== (lang === 'fr')) await page.click('#lang-launch');
+          await page.click(`.flag[data-lang="${lang}"]`);
           await launch(mode);
         } else {
           await launch(mode, `&lang=${lang}`);
@@ -112,8 +112,9 @@ fs.mkdirSync(output, { recursive: true });
       assert(!shots.fr.equals(shots.en), `${mode} French narration differs from English`);
     }
     await page.goto(`${base}?lcd=0`);
-    await page.click('#lang-launch');
-    assert(!(await page.isChecked('#lang-launch')), 'French text switched back off');
+    await page.click('.flag[data-lang="en"]');
+    assert.equal(await page.getAttribute('.flag[data-lang="en"]', 'aria-checked'), 'true', 'English flag pressed again');
+    await page.screenshot({ path: `${output}/launcher.png` });
     // The device's direction pad sends the game's arrow keys.
     const keys = [];
     page.on('console', m => { if (m.text().includes('key down')) keys.push(m.text()); });

@@ -2,6 +2,7 @@
 // Fade web player: in-screen edition launcher, data download/cache, LCD filter and hardware buttons.
 const $ = selector => document.querySelector(selector);
 const params = new URLSearchParams(location.search);
+const BUILD = '?v=dev';   // replaced by tools/web_build.sh, so a release never pairs with a cached engine
 const device = $('#device');
 const canvas = $('#canvas');
 const today = $('#today');
@@ -50,10 +51,23 @@ for (const box of document.querySelectorAll('.lcd-check')) box.onchange = () => 
 for (const b of document.querySelectorAll('.lcd-toggle, #power')) b.onclick = () => setLcd(!lcd);
 
 // ---- game text language: ?lang=fr|en, otherwise the last choice in this browser ----------------
+// The flags behave like a Pocket PC toolbar's toggle buttons: the current language stays pressed.
 let lang = (params.get('lang') || store.get('fade-lang')) === 'fr' ? 'fr' : 'en';
-for (const box of document.querySelectorAll('.lang-check')) {
-  box.checked = lang === 'fr';
-  box.onchange = () => { lang = box.checked ? 'fr' : 'en'; store.set('fade-lang', lang); };
+const flags = document.querySelectorAll('.flag');
+function setLang(code) {
+  lang = code;
+  for (const flag of flags) flag.setAttribute('aria-checked', String(flag.dataset.lang === code));
+}
+setLang(lang);
+for (const flag of flags) {
+  flag.onclick = () => { setLang(flag.dataset.lang); store.set('fade-lang', lang); };
+  flag.onkeydown = event => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+    const other = [...flags].find(f => f !== flag);
+    other.focus();
+    other.click();
+    event.preventDefault();
+  };
 }
 
 // ---- walkthrough and help: Pocket PC screens drawn over the game --------------------------
@@ -409,7 +423,7 @@ async function start(edition) {
     const wanted = remastered ? [packs.classic, packs.remastered] : [packs.classic];
     const total = wanted.reduce((sum, p) => sum + p.bytes, 0);
     let received = 0;
-    const engine = loadScript('fade.js');
+    const engine = loadScript('fade.js' + BUILD);
     const buffers = await fetchPacks(wanted, n => {
       received += n;
       barFill.style.width = `${(received / total) * 100}%`;
@@ -422,7 +436,7 @@ async function start(edition) {
     game = await window.createFade({
       canvas,
       noInitialRun: true,
-      locateFile: path => path,
+      locateFile: path => path + BUILD,
       preRun: [module => {
         const FS = module.FS;
         // Files are owned by the downloaded buffers, so nothing is copied.

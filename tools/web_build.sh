@@ -27,5 +27,8 @@ emcc build/web-objects/*.o -o build/web/fade.js -O2 --profiling-funcs -sUSE_SDL=
   -sFORCE_FILESYSTEM=1 -sEXPORTED_RUNTIME_METHODS='["FS","IDBFS","callMain","HEAPU8","ENV"]' \
   -sEXPORTED_FUNCTIONS='["_main","_port_set_lcd"]' \
   -sINVOKE_RUN=0 -sEXIT_RUNTIME=1 -sENVIRONMENT=web -lidbfs.js -lm
+# Version the page's code so browsers never pair a new release with a cached engine or player.
+BUILD=$(cat build/web/fade.js build/web/fade.wasm build/web/player.js build/web/site.css | shasum | cut -c1-12)
+perl -pi -e "s/\?v=dev/?v=$BUILD/g" build/web/index.html build/web/player.js
 python3 tools/pack_web_data.py "$ASSETS" build/web/data
 python3 tools/validate_web.py build/web

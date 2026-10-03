@@ -7,8 +7,8 @@
 <meta name="description" content="Fade (Fade Team, 2001), the Pocket PC adventure, recompiled to run in your browser. Play the Classic or Remastered edition.">
 <meta name="theme-color" content="#141011">
 <link rel="icon" href="fade-icon.png">
-<link rel="stylesheet" href="site.css">
-<script src="player.js" defer></script>
+<link rel="stylesheet" href="site.css?v=dev">
+<script src="player.js?v=dev" defer></script>
 </head>
 <body>
 <main class="stage" id="stage">
@@ -38,7 +38,7 @@
               <span><b>Remastered</b><small>4× art, outline text and enhanced sound</small><em id="size-remastered"></em></span>
             </button>
             <label class="check"><input type="checkbox" class="lcd-check" id="lcd-launch"><span>Pocket PC screen filter</span></label>
-            <label class="check"><input type="checkbox" class="lang-check" id="lang-launch"><span>French text <span lang="fr">(Français)</span></span></label>
+            <div class="saves language" role="radiogroup" aria-labelledby="language-label"><span id="language-label">Language</span><span class="flags"><button type="button" class="flag" role="radio" data-lang="en" aria-checked="true" title="English"><svg viewBox="0 0 19 10" aria-hidden="true"><rect width="19" height="10" fill="#b22234"/><path d="M0 1.15h19M0 2.7h19M0 4.23h19M0 5.77h19M0 7.3h19M0 8.85h19" stroke="#fff" stroke-width=".77"/><rect width="7.6" height="5.38" fill="#3c3b6e"/><g fill="#fff"><circle cx="1.3" cy="1.1" r=".38"/><circle cx="3.8" cy="1.1" r=".38"/><circle cx="6.3" cy="1.1" r=".38"/><circle cx="2.55" cy="2.7" r=".38"/><circle cx="5.05" cy="2.7" r=".38"/><circle cx="1.3" cy="4.3" r=".38"/><circle cx="3.8" cy="4.3" r=".38"/><circle cx="6.3" cy="4.3" r=".38"/></g></svg></button><button type="button" class="flag" role="radio" data-lang="fr" aria-checked="false" title="Français" lang="fr"><svg viewBox="0 0 15 10" aria-hidden="true"><rect width="5" height="10" fill="#002395"/><rect x="5" width="5" height="10" fill="#fff"/><rect x="10" width="5" height="10" fill="#ed2939"/></svg></button></span></div>
             <div class="saves"><span id="saves-count">Saved games</span><span class="saves-actions"><button type="button" class="link" id="backup" disabled>Back up</button><button type="button" class="link" id="restore">Restore</button></span></div>
             <input type="file" id="restore-file" accept=".json,application/json" hidden>
             <p class="today-note">Both editions share saved games.</p>
@@ -89,7 +89,7 @@
             <label class="check"><input type="checkbox" class="lcd-check"><span>Pocket PC screen filter</span></label>
             <p>Recreates a 2001 3.8″ transflective screen: the 240×320 pixel grid with RGB stripes, 65,536 colours, greyish blacks and muted colour, an uneven front light and slow pixel response. In Remastered, the filter shows the game at the original 240×320 resolution. You can switch it on or off at any time, including while playing.</p>
             <h2>Language</h2>
-            <p>The game text is English. <b>French text</b> on the Home menu plays either edition with the original French release’s text instead; it applies when you next start an edition. Saved games work in both languages.</p>
+            <p>Choose the game text with the flags beside <b>Language</b> on the Home menu: English, or the original French release’s text. The pressed flag is the current language; it applies when you next start an edition. Saved games work in both languages.</p>
             <h2>Saves</h2>
             <p>Use the game’s Save command. Saves stay in this browser and are shared by both editions. Clearing the site’s data removes them, and private browsing may not keep them.</p>
             <p>On the Home menu, <b>Back up</b> downloads a copy of your save files, and <b>Restore</b> loads one back. Restoring replaces every saved game in this browser with the backup’s.</p>

@@ -271,6 +271,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ---- saved games row and notification balloon ---------------------------------------- */
 .saves { display: flex; align-items: baseline; justify-content: space-between; gap: calc(6 * var(--u)); margin: calc(4 * var(--u)) 0 calc(3 * var(--u)); font-size: calc(9.5 * var(--u)); }
 .saves-actions { display: flex; gap: calc(8 * var(--u)); }
+.language { align-items: center; }
+.flags { display: flex; gap: calc(3 * var(--u)); }
+/* Toolbar toggle buttons: flat until pressed, then sunken on the checked (dithered) face. */
+.flag { display: grid; place-items: center; padding: calc(2 * var(--u)) calc(3 * var(--u)); border: 1px solid transparent; background: none; cursor: pointer; }
+.flag svg { display: block; height: calc(10 * var(--u)); width: auto; box-shadow: 0 0 0 1px #000; }
+.flag:not([aria-checked="true"]):hover { border-color: #fff #808080 #808080 #fff; }
+.flag[aria-checked="true"] {
+  border-color: #808080 #fff #fff #808080; box-shadow: inset 1px 1px #000;
+  background: repeating-conic-gradient(#fff 0 25%, #c0c0c0 0 50%) 0 0 / 2px 2px;
+}
+.flag[aria-checked="true"] svg { transform: translate(1px, 1px); }
+.flag:focus-visible { outline: 1px dotted #000; outline-offset: 1px; }
 .link { padding: 0; border: 0; background: none; font: inherit; color: #0000e0; text-decoration: underline; }
 .link:disabled { color: #777; text-decoration: none; cursor: default; }
 .notify {

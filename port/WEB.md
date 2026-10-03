@@ -118,7 +118,7 @@ is a launcher option.
 
 ## Language
 
-**French text** on the Home menu (or `?lang=fr` / `?lang=en`) starts either edition
+The flags beside **Language** on the Home menu (or `?lang=fr` / `?lang=en`) starts either edition
 with the French release's text. The choice is remembered in `localStorage` and
 applies at the next start. The player sets `FADE_LANG=fr`, and `port/src/files.c`
 then looks up `lang/fr/<path>` before `<path>`. `tools/stage_assets.py` stages

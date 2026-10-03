@@ -40,12 +40,12 @@ format.
 `port/src/files.c` reads `FADE_LANG`. For a two-letter code other than `en`, every asset
 lookup tries `lang/<code>/<path>` first, then `<path>`. `tools/stage_assets.py` stages
 `lang/` into `fade/lang/` and lists it in `files.txt`. The web player sets `FADE_LANG=fr`
-from its Home menu checkbox or `?lang=fr`. The Android launcher does not offer the
+from its Home menu flags or `?lang=fr`. The Android launcher does not offer the
 language yet; the files are packaged, so it only needs to set the variable.
 
 ## Verification
 
-- `tools/tests/web.cjs`: in Classic (`?lang=`) and Remastered (Home checkbox), French loads
+- `tools/tests/web.cjs`: in Classic (`?lang=`) and Remastered (Home menu flag), French loads
   the override pack and English does not. New Game shows the French narration, and the
   English and French screenshots differ.
 - Manual browser checks: the scene 2 dialogue menu is French and advances when a choice
