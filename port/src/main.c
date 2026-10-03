@@ -11,6 +11,7 @@
 #include <emscripten.h>
 #endif
 #ifdef __ANDROID__
+#include <jni.h>
 #include <sys/system_properties.h>
 #endif
 
@@ -62,13 +63,44 @@ void port_present(int force)
     SDL_RenderPresent(ren);
 }
 
+// Called by the web player's screen-filter switch (on Android, via lcd_event on the game thread).
 #ifdef __EMSCRIPTEN__
-// Called by the web player's screen-filter switch.
-EMSCRIPTEN_KEEPALIVE void port_set_lcd(int on)
+EMSCRIPTEN_KEEPALIVE
+#endif
+void port_set_lcd(int on)
 {
     port_lcd = on != 0;
     lcd_reset();
     fb_dirty = 1;
+}
+
+#ifdef __ANDROID__
+// The Android player's screen-filter switch (GameActivity.nativeSetLcd, UI thread). SDL_PushEvent is
+// thread-safe, so the change is applied by port_pump on the game thread between frames.
+static Uint32 lcd_event = (Uint32)-1;
+JNIEXPORT void JNICALL Java_org_fadeport_fade_GameActivity_nativeSetLcd(JNIEnv *env, jclass cls, jint on)
+{
+    (void)env; (void)cls;
+    if (lcd_event == (Uint32)-1) return;
+    SDL_Event e;
+    SDL_zero(e);
+    e.type = lcd_event;
+    e.user.code = on;
+    SDL_PushEvent(&e);
+}
+
+// Tells GameActivity that the game is drawing, so the player hides its loading screen.
+static void android_game_started(void)
+{
+    JNIEnv *env = SDL_AndroidGetJNIEnv();
+    jobject activity = SDL_AndroidGetActivity();
+    if (!env || !activity) return;
+    jclass cls = (*env)->GetObjectClass(env, activity);
+    jmethodID started = (*env)->GetMethodID(env, cls, "onGameStarted", "()V");
+    if (started) (*env)->CallVoidMethod(env, activity, started);
+    if ((*env)->ExceptionCheck(env)) (*env)->ExceptionClear(env);
+    (*env)->DeleteLocalRef(env, cls);
+    (*env)->DeleteLocalRef(env, activity);
 }
 #endif
 
@@ -138,6 +170,11 @@ void port_pump(int wait_ms)
         case SDL_WINDOWEVENT:
             if (e.window.event == SDL_WINDOWEVENT_EXPOSED || e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) port_present(1);
             break;
+#ifdef __ANDROID__
+        default:
+            if (e.type == lcd_event) { port_set_lcd(e.user.code); port_present(1); }
+            break;
+#endif
         }
         got = SDL_PollEvent(&e);
     }
@@ -195,6 +232,9 @@ static void *game_thread(void *arg)
                             SDL_TEXTUREACCESS_STREAMING, SCREEN_W * scale, SCREEN_H * scale);
     if (!tex) port_fatal("SDL_CreateTexture: %s", SDL_GetError());
     port_present(1);
+#ifdef __ANDROID__
+    android_game_started();
+#endif
 
     static_init();
     int rc = (int)WinMain((HINSTANCE)(uintptr_t)0x10000, 0, 0, 1 /* SW_SHOWNORMAL */);
@@ -224,6 +264,9 @@ int main(int argc, char **argv)
     SDL_SetHint(SDL_HINT_EMSCRIPTEN_ASYNCIFY, "0");
 #endif
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_TIMER) < 0) port_fatal("SDL_Init: %s", SDL_GetError());
+#ifdef __ANDROID__
+    lcd_event = SDL_RegisterEvents(1);
+#endif
 
     arena_init();
     size_t len;

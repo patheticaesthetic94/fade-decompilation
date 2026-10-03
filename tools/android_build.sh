@@ -1,5 +1,7 @@
 #!/bin/sh
-# Build the Android APK with both editions (the launcher picks Classic or Remastered): tools/android_build.sh [Gradle tasks...]
+# Build the Android APK: the web player's page (Home, Walkthrough, Help, device) around the native game,
+# with both editions (Home picks Classic or Remastered): tools/android_build.sh [Gradle tasks...]
+# Remastered uses the web's JPEG q92 artwork (FADE_HD_JPEG=0 keeps the lossless PNGs, a ~400 MB APK).
 set -eu
 cd "$(dirname "$0")/.."
 SDL=SDL2-2.32.10
@@ -11,7 +13,9 @@ if [ ! -d "build/third_party/$SDL" ]; then
   rm build/third_party/sdl.tar.gz
 fi
 python3 tools/mkport.py
-python3 tools/stage_assets.py --output build/android-assets
+if [ "${FADE_HD_JPEG:-92}" = 0 ]; then python3 tools/stage_assets.py --output build/android-assets
+else python3 tools/stage_assets.py --output build/android-assets --hd-jpeg "${FADE_HD_JPEG:-92}"; fi
+python3 tools/stage_android_page.py build/android-assets
 printf 'sdk.dir=%s\n' "$ANDROID_HOME" > port/android/local.properties
 [ "$#" -gt 0 ] || set -- assembleDebug
 cd port/android

@@ -1,5 +1,6 @@
-// Fade for Android. Java glue is SDL2's (build/third_party), native code is port/CMakeLists.txt,
-// assets (the game data) are staged into build/android-assets by tools/android_build.sh.
+// Fade for Android: the web player's page (WebView) around the native game. Java glue is SDL2's
+// (build/third_party) plus src/main/java, native code is port/CMakeLists.txt, and assets (game data
+// and the player page) are staged into build/android-assets by tools/android_build.sh.
 plugins { id 'com.android.application' }
 
 def root = file('../../..')
@@ -13,17 +14,19 @@ android {
         applicationId 'org.fadeport.fade'
         minSdk 24
         targetSdk 35
-        versionCode 4
-        versionName '1.09.3'
+        versionCode 5
+        versionName '1.09.4'
         externalNativeBuild { cmake { arguments '-DANDROID_STL=c++_static' } }
         ndk { abiFilters 'arm64-v8a', 'x86_64' }
     }
     externalNativeBuild { cmake { path file('../../CMakeLists.txt'); version '3.22.1+' } }
     sourceSets.main {
         java.srcDirs = ['src/main/java', new File(sdl, 'android-project/app/src/main/java')]
-        assets.srcDirs = [new File(root, 'build/android-assets')]
+        // build/android-assets: fade/ hd/ fonts/ hdaudio/ (tools/stage_assets.py) and web/ (the player page);
+        // src/main/shim: android/shim.js, which adapts that page to the native game.
+        assets.srcDirs = [new File(root, 'build/android-assets'), 'src/main/shim']
     }
-    androidResources { noCompress += ['fad', 'ifj', 'ifb', 'ifv', 'ifg', 'exe', 'txt'] }
+    androidResources { noCompress += ['fad', 'ifj', 'ifb', 'ifv', 'ifg', 'exe', 'txt', 'jpg', 'png'] }
     signingConfigs {
         release {
             def keyPath = System.getenv('FADE_RELEASE_KEYSTORE')

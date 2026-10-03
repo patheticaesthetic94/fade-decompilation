@@ -20,9 +20,9 @@
 
 - [Play on the web](https://patheticaesthetic94.github.io/fade-decompilation/) - The game runs inside a recreated Pocket PC on your desk. Choose **Classic** or **Remastered** on its screen, and use its direction pad and buttons or your keyboard. Saves are kept in your browser and shared between editions, but can also be exported.
 
-- [Android release](https://github.com/patheticaesthetic94/fade-decompilation/releases/latest) - One APK holds both editions: its launcher offers **Classic** or **Remastered** each time you start. Requires Android 7.0+ and supports arm64-v8a and x86_64. It installs over earlier Original or HD releases and keeps their saves. Uninstalling or clearing app data removes saves.
+- [Android release](https://github.com/patheticaesthetic94/fade-decompilation/releases/latest) - One APK holds both editions and the web player's interface: the same Pocket PC Home (**Classic** or **Remastered**, language flags, screen filter, save backup/restore), Walkthrough, Help, dock and device view, around the native game. Requires Android 7.0+ and supports arm64-v8a and x86_64. It installs over earlier Original or HD releases and keeps their saves. Uninstalling or clearing app data removes saves.
 
-- **Pocket PC screen filter** (web and Android) - Recreates a 2001 3.8" transflective screen: the 240 × 320 pixel grid with RGB stripes, 65,536 colours, raised blacks and a narrow gamut, an uneven front light and slow pixel response. On the web it can be switched on or off while playing.
+- **Pocket PC screen filter** (web and Android) - Recreates a 2001 3.8" transflective screen: the 240 × 320 pixel grid with RGB stripes, 65,536 colours, raised blacks and a narrow gamut, an uneven front light and slow pixel response. It can be switched on or off while playing.
 
 ## HD Remaster (Optional)
 
@@ -48,10 +48,10 @@ Whilst the game can be enjoyed in it's original resolution using all of it's ori
 
 ## Build
 
-Install Python 3, JDK 17+, Android SDK platform 35, NDK `29.0.14206865`, and Android CMake `3.22.1` or newer. Set `ANDROID_HOME` to the SDK path; the macOS default is `~/Library/Android/sdk`. The first build downloads SDL2 2.32.10, Gradle 8.11.1, and Android build dependencies. No third-party Python packages or decompiler installation are needed.
+Install Python 3, JDK 17+, Android SDK platform 35, NDK `29.0.14206865`, and Android CMake `3.22.1` or newer. Set `ANDROID_HOME` to the SDK path; the macOS default is `~/Library/Android/sdk`. The first build downloads SDL2 2.32.10, Gradle 8.11.1, and Android build dependencies. Staging needs Pillow (`pip install pillow`) to re-encode Remastered artwork as JPEG, as the web build does; no decompiler installation is needed.
 
 ```sh
-tools/android_build.sh       # debug APK with Classic and Remastered
+tools/android_build.sh       # debug APK with Classic and Remastered (FADE_HD_JPEG=0: lossless PNG artwork)
 ```
 
 Output: `port/android/app/build/outputs/apk/debug/app-debug.apk`.
