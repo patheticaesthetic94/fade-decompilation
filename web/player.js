@@ -11,9 +11,8 @@ const detail = $('#detail');
 const bar = $('.bar');
 const barFill = $('#bar-fill');
 const retry = $('#retry');
-const lcdLaunch = $('#lcd-launch');
-const lcdToggle = $('#lcd-toggle');
 const backup = $('#backup');
+const notifyBox = $('#notify');
 let game = null;
 let packs = null;
 let running = false;
@@ -40,14 +39,15 @@ let lcd = params.has('lcd') ? params.get('lcd') === '1' : store.get('fade-lcd') 
 function setLcd(on) {
   lcd = on;
   store.set('fade-lcd', on ? '1' : '0');
-  lcdLaunch.checked = on;
-  lcdToggle.setAttribute('aria-pressed', String(on));
+  for (const box of document.querySelectorAll('.lcd-check')) box.checked = on;
+  for (const b of document.querySelectorAll('.lcd-toggle, #power')) b.setAttribute('aria-pressed', String(on));
   device.classList.toggle('lcd', on);
   if (running && game) game._port_set_lcd(on ? 1 : 0);
 }
 setLcd(lcd);
-lcdLaunch.onchange = () => setLcd(lcdLaunch.checked);
-lcdToggle.onclick = () => setLcd(!lcd);
+for (const box of document.querySelectorAll('.lcd-check')) box.onchange = () => setLcd(box.checked);
+// The power button on top of the device, and the fullscreen dock, switch the filter.
+for (const b of document.querySelectorAll('.lcd-toggle, #power')) b.onclick = () => setLcd(!lcd);
 
 // ---- walkthrough and help: Pocket PC screens drawn over the game --------------------------
 const overlays = { guide: $('#walk'), help: $('#helpscreen') };
@@ -118,6 +118,56 @@ function closeOverlay() {
   if (running) canvas.focus();
 }
 for (const b of document.querySelectorAll('[data-open]')) b.addEventListener('click', () => openOverlay(b.dataset.open));
+
+// ---- Pocket PC notification balloon --------------------------------------------------------
+let notifyClose = null;
+function notify(text, actions) {
+  $('#notify-text').textContent = text;
+  const row = $('#notify-actions');
+  row.replaceChildren(...actions.map(([label, run]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ppc-button';
+    button.textContent = label;
+    button.onclick = () => { dismiss(); run?.(); };
+    return button;
+  }));
+  const previous = document.activeElement;
+  notifyClose = () => previous?.focus?.({ preventScroll: true });
+  notifyBox.hidden = false;
+  row.lastElementChild.focus();   // the safe choice
+}
+function dismiss() {
+  if (notifyBox.hidden) return;
+  notifyBox.hidden = true;
+  notifyClose?.();
+}
+function notifyKey(key) {
+  const buttons = [...notifyBox.querySelectorAll('button')];
+  const at = buttons.indexOf(document.activeElement);
+  if (key === 'ArrowLeft' || key === 'ArrowUp') buttons[Math.max(0, at - 1)].focus();
+  else if (key === 'ArrowRight' || key === 'ArrowDown') buttons[Math.min(buttons.length - 1, at + 1)].focus();
+  else if (key === 'Enter') (buttons[at] || buttons.at(-1)).click();
+  else if (key === 'Escape') dismiss();
+}
+
+// ---- device buttons: Home, Walkthrough, Fullscreen, Help -----------------------------------
+function goHome() {
+  closeOverlay();
+  if (!running) {
+    if (game || failed || params.has('edition') || params.has('version')) location.href = location.pathname;
+    return;
+  }
+  notify('Return to the edition menu? Anything since your last save will be lost.',
+    [['Yes', () => { location.href = location.pathname; }], ['No', null]]);
+}
+const actions = {
+  home: goHome,
+  guide: () => openOverlay('guide'),
+  help: () => openOverlay('help'),
+  fullscreen: () => toggleFullscreen(),
+};
+for (const b of document.querySelectorAll('[data-action]')) b.addEventListener('click', () => actions[b.dataset.action]());
 for (const b of document.querySelectorAll('[data-close]')) b.onclick = closeOverlay;
 
 // While a screen is open, the game does not see the keyboard; keys scroll or close the screen.
@@ -130,23 +180,29 @@ function overlayKey(key) {
   else if (key === 'ArrowRight') doc.scrollBy({ top: step * 0.9 });
   else if (key === 'Enter' || key === 'Escape') closeOverlay();
 }
+// Registered before the engine's listener, so SDL never sees keys meant for a screen or balloon.
 window.addEventListener('keydown', event => {
-  if (!overlay || !event.isTrusted) return;
-  event.stopImmediatePropagation();   // registered before the engine's listener, so SDL never sees it
+  if (!event.isTrusted) return;
+  if (!notifyBox.hidden) {
+    event.stopImmediatePropagation();
+    if (event.key.startsWith('Arrow') || event.key === 'Escape') { event.preventDefault(); notifyKey(event.key); }
+    return;
+  }
+  if (!overlay) return;
+  event.stopImmediatePropagation();
   if (event.key === 'Escape') { event.preventDefault(); walkMenu.hidden ? closeOverlay() : showMenu(false); }
 }, true);
-window.addEventListener('keyup', event => { if (overlay && event.isTrusted) event.stopImmediatePropagation(); }, true);
+window.addEventListener('keyup', event => {
+  if (event.isTrusted && (overlay || !notifyBox.hidden)) event.stopImmediatePropagation();
+}, true);
 
 // Fullscreen hides the device and scales the game to the display. Without the Fullscreen API
 // (iPhone Safari), the same layout fills the browser window instead.
-const fsButton = $('#fullscreen');
 function setFullscreen(on) {
   document.body.classList.toggle('fs', on);
-  fsButton.setAttribute('aria-pressed', String(on));
-  fsButton.querySelector('span').textContent = on ? 'Exit fullscreen' : 'Fullscreen';
   window.dispatchEvent(new Event('resize'));
 }
-fsButton.onclick = () => {
+function toggleFullscreen() {
   const on = !document.body.classList.contains('fs');
   if (!on && document.fullscreenElement) document.exitFullscreen().catch(() => {});
   else if (on && document.documentElement.requestFullscreen) {
@@ -163,9 +219,6 @@ window.addEventListener('pointermove', () => {
   clearTimeout(idle);
   idle = setTimeout(() => document.body.classList.remove('pointer-active'), 2000);
 });
-$('#power').onclick = () => {
-  if (!running || confirm('Return to the edition choice? Unsaved progress will be lost.')) location.href = location.pathname;
-};
 
 // ---- hardware buttons send the keys the game reads ---------------------------------------
 const keyCodes = { ArrowUp: 38, ArrowDown: 40, ArrowLeft: 37, ArrowRight: 39, Enter: 13, Escape: 27, z: 90, x: 88, c: 67 };
@@ -187,8 +240,9 @@ for (const button of document.querySelectorAll('[data-key]')) {
     button.setPointerCapture?.(event.pointerId);
     button.classList.add('pressed');
     if (pad && !button.classList.contains('action')) pad.dataset.tilt = button.className;
-    toGame = !overlay && running;
+    toGame = !overlay && notifyBox.hidden && running;
     if (toGame) sendKey('keydown', key);
+    else if (!notifyBox.hidden) notifyKey(key);
     else if (overlay) overlayKey(key);
   };
   const release = () => {
@@ -402,7 +456,6 @@ async function start(edition) {
     loading.hidden = true;
     canvas.hidden = false;
     device.dataset.state = 'on';
-    backup.disabled = false;
     canvas.focus();
     game.callMain([]);
   } catch (err) {
@@ -416,8 +469,32 @@ loadIndex().catch(() => { /* reported when an edition is chosen */ });
 const requested = params.get('edition') || { hd: 'remastered', normal: 'classic' }[params.get('version')];
 if (requested === 'classic' || requested === 'remastered') start(requested);
 
-backup.onclick = () => {
-  if (!game) return;
+// ---- saved games: read from the engine while it runs, otherwise straight from IndexedDB -----
+// IDBFS keeps each file under its full path ('/saves/...') in the 'FILE_DATA' store of a database
+// named after the mount point.
+function readStoredSaves() {
+  return new Promise(resolve => {
+    let request;
+    try { request = indexedDB.open('/saves', 21); } catch { resolve({}); return; }
+    request.onupgradeneeded = () => request.transaction.abort();   // nothing saved yet: create nothing
+    request.onerror = () => resolve({});
+    request.onsuccess = () => {
+      const db = request.result;
+      const files = {};
+      try {
+        const cursor = db.transaction('FILE_DATA', 'readonly').objectStore('FILE_DATA').openCursor();
+        cursor.onsuccess = () => {
+          const c = cursor.result;
+          if (!c) { db.close(); resolve(files); return; }
+          if (c.value?.contents && String(c.key).startsWith('/saves/')) files[String(c.key).slice('/saves/'.length)] = Array.from(c.value.contents);
+          c.continue();
+        };
+        cursor.onerror = () => { db.close(); resolve(files); };
+      } catch { db.close(); resolve({}); }
+    };
+  });
+}
+function readRunningSaves() {
   const files = {};
   (function collect(path) {
     for (const name of game.FS.readdir(path)) {
@@ -427,6 +504,19 @@ backup.onclick = () => {
       else files[full.slice('/saves/'.length)] = Array.from(game.FS.readFile(full));
     }
   })('/saves');
+  return files;
+}
+const readSaves = () => (game && running ? Promise.resolve(readRunningSaves()) : readStoredSaves());
+async function showSaves() {
+  const files = await readSaves();
+  const count = Object.keys(files).filter(name => name.startsWith('save/')).length;
+  $('#saves-count').textContent = count ? `Saved games: ${count}` : 'No saved games yet';
+  backup.disabled = !Object.keys(files).length;
+}
+showSaves();
+backup.onclick = async () => {
+  const files = await readSaves();
+  if (!Object.keys(files).length) return;
   const url = URL.createObjectURL(new Blob([JSON.stringify({ format: 'fade-saves-v1', files })], { type: 'application/json' }));
   const link = document.createElement('a');
   link.href = url;

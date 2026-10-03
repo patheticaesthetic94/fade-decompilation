@@ -27,8 +27,8 @@ The engine reads `FADE_EDITION=classic|remastered` before loading media.
 
 ## Fullscreen
 
-The dock's fullscreen button puts the device away and scales the 3:4 game to fill the
-display, keeping its shape on a black background. Moving the pointer reveals the dock.
+The Fullscreen button puts the device away and scales the 3:4 game to fill the
+display, keeping its shape on a black background. Moving the pointer reveals the dock (Home, Walkthrough, screen filter, Help, exit).
 Browsers without the Fullscreen API (iPhone Safari) get the same layout inside the
 browser window.
 
@@ -74,12 +74,24 @@ domains both work. The site is https://patheticaesthetic94.github.io/fade-decomp
 
 ## The device and its controls
 
-The Pocket PC is drawn in CSS and sized so the whole device fits the window; one
-game pixel is `--u`. Clicking or tapping the screen uses the original game
-coordinates. The direction pad sends the arrow keys and Enter; the four application
-buttons send Z, X, C and Escape (the game's hardware buttons). The keyboard works
-too. The power button returns to the launcher. The dock holds the screen-filter
-switch, the walkthrough, fullscreen, save backup and help.
+The Pocket PC is drawn in CSS. It is zoomed so that the top of the case and its bottom
+curve fall outside the window, while the screen, direction pad and buttons stay in
+view. One game pixel is `--u`. Clicking or tapping the screen uses the original game
+coordinates. The direction pad sends the arrow keys and Enter, and the keyboard
+works too (Z, X and C are the game's other hardware buttons). The four front
+buttons are:
+
+- **Home** returns to the edition menu. While a game is loaded it first asks in a
+  Pocket PC notification balloon, because unsaved progress will be lost.
+- **Walkthrough**.
+- **Fullscreen** hides the device and scales the game to the display. A small dock
+  then offers the same actions, plus the filter.
+- **Help**.
+
+The switch on the right edge turns the screen filter on and off, and so does a
+checkbox in Help. The edition menu shows how many games are saved and downloads a
+JSON backup. Without a running game it reads IDBFS's IndexedDB store
+(`/saves`, `FILE_DATA`) directly.
 
 The walkthrough and help open on the device's own screen, over the launcher or the
 running game. They use the same Pocket PC look: a title bar with an **ok** button, a
@@ -105,8 +117,7 @@ Use the game's Save command. `/saves` is restored from IndexedDB before WinMain
 starts; IDBFS automatically persists closed/written saves and registry settings.
 Both editions use the same store. Allow a moment after saving for the browser to
 finish persisting changes. Clearing browser site data deletes saves; private
-browsing may restrict persistence. The dock downloads a JSON backup of all save
-files. Audio may require a tap on the screen because browsers gate audio behind
+browsing may restrict persistence. The edition menu downloads a JSON backup of all save files. Audio may require a tap on the screen because browsers gate audio behind
 user gestures.
 
 ## Implementation
@@ -124,8 +135,8 @@ slices of the reassembled pack buffer).
 `packs.json` and total deployment size. The workflow also runs `tools/tests/web.cjs`
 in Chromium: the launcher, both editions' menus, gameplay, real game saves,
 restoration after reload, loading a Classic save in Remastered, switching the
-filter while playing, the direction pad reaching the game, the in-screen walkthrough, fullscreen sizing and
-stored downloads on a repeat visit. Run it locally with:
+filter while playing, the direction pad reaching the game, the in-screen walkthrough, the Home balloon, fullscreen sizing,
+stored downloads on a repeat visit and the edition menu's save backup. Run it locally with:
 
 ```sh
 npm install --prefix build/web-test playwright@1.63.0

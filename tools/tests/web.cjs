@@ -82,11 +82,11 @@ fs.mkdirSync(output, { recursive: true });
     // The screen filter switches on and off while playing.
     const frame = () => page.locator('#canvas').screenshot();
     const plain = await frame();
-    await page.click('#lcd-toggle');
+    await page.click('#power');
     await page.waitForTimeout(800);
     assert(!plain.equals(await frame()), 'Screen filter changes the rendered panel');
     await page.screenshot({ path: `${output}/hd-filter.png` });
-    await page.click('#lcd-toggle');
+    await page.click('#power');
     // The device's direction pad sends the game's arrow keys.
     const keys = [];
     page.on('console', m => { if (m.text().includes('key down')) keys.push(m.text()); });
@@ -99,7 +99,7 @@ fs.mkdirSync(output, { recursive: true });
     await page.waitForTimeout(500);
     assert(keys.some(k => k.includes('vk 0x28')), 'Direction pad reaches the game as VK_DOWN');
     // The walkthrough opens on the device's screen with a chapter menu; the d-pad scrolls it.
-    await page.click('.dock [data-open="guide"]');
+    await page.click('.keys [data-action="guide"]');
     await page.waitForFunction(() => document.querySelectorAll('#walk-menu button').length >= 10);
     const screen = await page.locator('#screen').boundingBox();
     const walk = await page.locator('#walk').boundingBox();
@@ -109,18 +109,34 @@ fs.mkdirSync(output, { recursive: true });
     assert(await page.evaluate(() => document.querySelector('#walk-doc').scrollTop) > 0, 'Direction pad scrolls the walkthrough');
     await page.click('#walk .ok');
     // Fullscreen puts the device away and fits the 3:4 game to the display.
-    await page.click('#fullscreen');
+    // Home asks in a Pocket PC balloon, not a browser dialog; No keeps playing.
+    page.on('dialog', d => { errors.push(`browser dialog: ${d.message()}`); d.dismiss(); });
+    await page.click('.keys [data-action="home"]');
+    await page.waitForSelector('#notify:not([hidden])');
+    await page.click('#notify-actions button:last-child');
+    assert(await page.isHidden('#notify') && await page.isVisible('#canvas'), 'No keeps the game running');
+    await page.click('.keys [data-action="fullscreen"]');
     await page.waitForTimeout(800);
     const box = await page.locator('#canvas').boundingBox();
     const view = page.viewportSize();
     assert(Math.abs(Math.min(view.width / 240, view.height / 320) * 320 - box.height) < 2, 'Fullscreen game fills the display');
     assert(!(await page.locator('.keys').isVisible()), 'Fullscreen hides the device');
     await page.screenshot({ path: `${output}/fullscreen.png` });
-    // Both editions' parts were stored, so a repeat visit needs no download.
-    await page.goto(base);
+    await page.click('.dock [data-action="fullscreen"]');
+    // Home then Yes returns to the edition menu. Both editions' parts were stored, so a repeat
+    // visit needs no download, and the menu offers a backup of the saved games.
+    await page.click('.keys [data-action="home"]');
+    await page.click('#notify-actions button:first-child');
+    await page.waitForURL(url => !url.search);
     await page.waitForFunction(() => document.querySelector('#size-remastered').textContent === 'Stored on this device');
+    await page.waitForFunction(() => !document.querySelector('#backup').disabled);
+    const [download] = await Promise.all([page.waitForEvent('download'), page.click('#backup')]);
+    const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
+    assert.deepEqual(Object.keys(backup.files).filter(n => n.startsWith('save/')).sort(), Object.keys(saved).map(n => `save/${n}`).sort(),
+      'Edition menu backs up the stored saves');
+    assert.deepEqual(errors, [], 'No runtime errors or browser dialogs');
     assert.deepEqual(errors, [], 'No runtime errors during gameplay or save loading');
-    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons, in-screen walkthrough, fullscreen, stored downloads');
+    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons, in-screen walkthrough, Home balloon, fullscreen, stored downloads, save backup from the edition menu');
   } finally {
     await browser.close();
   }

@@ -14,7 +14,7 @@
 <main class="stage" id="stage">
   <div class="device" id="device" data-state="off">
     <div class="device-head">
-      <button class="power" id="power" type="button" aria-label="Power: return to edition choice" title="Power: return to edition choice"></button>
+      <button class="power" id="power" type="button" aria-pressed="false" aria-label="Screen filter" title="Screen filter"></button>
       <span class="led" aria-hidden="true"></span>
       <span class="grille" aria-hidden="true"></span>
       <span class="ir" aria-hidden="true"></span>
@@ -37,7 +37,8 @@
               <img src="fade-icon.png" alt="" width="64" height="64"><i class="hd-badge" aria-hidden="true">HD</i>
               <span><b>Remastered</b><small>4× art, outline text and enhanced sound</small><em id="size-remastered"></em></span>
             </button>
-            <label class="check"><input type="checkbox" id="lcd-launch"><span>Pocket PC screen filter</span></label>
+            <label class="check"><input type="checkbox" class="lcd-check" id="lcd-launch"><span>Pocket PC screen filter</span></label>
+            <div class="saves"><span id="saves-count">Saved games</span><button type="button" class="link" id="backup" disabled>Download backup</button></div>
             <p class="today-note">Both editions share saved games.</p>
           </div>
           <footer class="cmdbar"><button type="button" data-open="guide">Walkthrough</button><button type="button" data-open="help">Help</button></footer>
@@ -70,27 +71,34 @@
             <h2>Controls</h2>
             <ul>
               <li>Tap the screen to interact. Tap the lower-right arrow to continue text.</li>
-              <li>The direction pad or arrow keys navigate. Enter / Z, X and C are the hardware buttons.</li>
-              <li>The power button returns to the edition choice.</li>
+              <li>The direction pad or arrow keys navigate; its centre button (or Enter) is the action button. Z, X and C are the game’s other hardware buttons.</li>
+              <li>The buttons beside the pad are Home (the edition menu), Walkthrough, Fullscreen and Help. The switch on the right edge of the device turns the screen filter on and off (it shows red when on).</li>
               <li>While this screen or the walkthrough is open, the direction pad scrolls it and the action button closes it.</li>
             </ul>
             <h2>Editions</h2>
             <p><b>Classic</b> is the game as released. <b>Remastered</b> adds 4× artwork, outline text and enhanced sound, and is a larger download. Both are stored on this device after the first download.</p>
             <h2>Screen filter</h2>
-            <p>Recreates a 2001 3.8″ transflective panel: the 240×320 pixel grid with RGB stripes, 65,536 colours, raised blacks and a narrow gamut, an uneven front light and slow pixel response. It can be switched on or off while playing.</p>
+            <label class="check"><input type="checkbox" class="lcd-check"><span>Pocket PC screen filter</span></label>
+            <p>Recreates a 2001 3.8″ transflective panel: the 240×320 pixel grid with RGB stripes, 65,536 colours, raised blacks and a narrow gamut, an uneven front light and slow pixel response. It can be switched on or off while playing, here or with the switch on the device's right edge.</p>
             <h2>Saves</h2>
-            <p>Use the game’s Save command. Saves stay in this browser and are shared by both editions. Clearing site data removes them, and private browsing may not keep them, so download a backup now and then.</p>
+            <p>Use the game’s Save command. Saves stay in this browser and are shared by both editions. Clearing site data removes them, and private browsing may not keep them, so download a backup now and then from the Home menu.</p>
           </article>
           <footer class="cmdbar"><button type="button" data-open="guide">Walkthrough</button><a href="https://github.com/patheticaesthetic94/fade-decompilation" target="_blank" rel="noopener">Source ↗</a></footer>
         </section>
+
+        <div class="notify" id="notify" role="alertdialog" aria-labelledby="notify-title" aria-describedby="notify-text" hidden>
+          <p class="notify-title" id="notify-title"><i></i>Fade</p>
+          <p id="notify-text"></p>
+          <div class="notify-actions" id="notify-actions"></div>
+        </div>
 
         <div class="glass" aria-hidden="true"></div>
       </div></div>
     </div>
     <p class="wordmark" aria-hidden="true">Pocket PC</p>
-    <div class="keys" role="group" aria-label="Hardware buttons">
-      <button class="app app1" type="button" data-key="z" aria-label="Button 1 (Enter or Z)"><svg viewBox="0 0 16 16"><rect x="3" y="4" width="10" height="9" rx="1"/><path d="M3 7h10M6 3v2M10 3v2"/></svg></button>
-      <button class="app app2" type="button" data-key="x" aria-label="Button 2 (X)"><svg viewBox="0 0 16 16"><circle cx="8" cy="6" r="2.5"/><path d="M3.5 13c.8-2.6 2.5-3.8 4.5-3.8s3.7 1.2 4.5 3.8"/></svg></button>
+    <div class="keys" role="group" aria-label="Device buttons">
+      <button class="app app1" type="button" data-action="home" aria-label="Home: edition menu" title="Home: edition menu"><svg viewBox="0 0 16 16"><path d="M2.5 8 8 3.5 13.5 8M4.5 6.5V13h7V6.5M6.8 13V9.5h2.4V13"/></svg></button>
+      <button class="app app2" type="button" data-action="guide" aria-label="Walkthrough" title="Walkthrough"><svg viewBox="0 0 16 16"><path d="M2.5 4C4 3.2 6 3.2 8 4.5c2-1.3 4-1.3 5.5-.5v8.5c-1.5-.8-3.5-.8-5.5.5-2-1.3-4-1.3-5.5-.5z"/><path d="M8 4.5V13"/></svg></button>
       <div class="dpad" aria-label="Direction pad">
         <button type="button" class="up" data-key="ArrowUp" aria-label="Up"></button>
         <button type="button" class="left" data-key="ArrowLeft" aria-label="Left"></button>
@@ -98,18 +106,18 @@
         <button type="button" class="right" data-key="ArrowRight" aria-label="Right"></button>
         <button type="button" class="down" data-key="ArrowDown" aria-label="Down"></button>
       </div>
-      <button class="app app3" type="button" data-key="c" aria-label="Button 3 (C)"><svg viewBox="0 0 16 16"><rect x="2.5" y="4" width="11" height="8" rx="1"/><path d="M2.5 4.5 8 9l5.5-4.5"/></svg></button>
-      <button class="app app4" type="button" data-key="Escape" aria-label="Button 4 (Escape)"><svg viewBox="0 0 16 16"><path d="M4 4.5h8M4 8h8M4 11.5h5"/></svg></button>
+      <button class="app app3" type="button" data-action="fullscreen" aria-label="Fullscreen" title="Fullscreen"><svg viewBox="0 0 16 16"><path d="M3 6V3h3M10 3h3v3M13 10v3h-3M6 13H3v-3"/></svg></button>
+      <button class="app app4" type="button" data-action="help" aria-label="Help" title="Help"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M6.4 6.4a1.7 1.7 0 1 1 2.3 1.6c-.5.2-.7.5-.7 1v.3M8 11.2h.01"/></svg></button>
     </div>
   </div>
 </main>
 
-<nav class="dock" aria-label="Player controls">
-  <button type="button" id="lcd-toggle" aria-pressed="false" title="Pocket PC screen filter"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7v10M12 7v10M16 7v10"/></svg><span>Screen filter</span></button>
-  <button type="button" data-open="guide" aria-pressed="false" aria-controls="walk" title="Walkthrough"><svg viewBox="0 0 24 24"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg><span>Walkthrough</span></button>
-  <button type="button" id="fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg><span>Fullscreen</span></button>
-  <button type="button" id="backup" title="Download a backup of your saves" disabled><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Back up saves</span></button>
-  <button type="button" data-open="help" aria-pressed="false" aria-controls="helpscreen" title="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.5M12 17h.01"/></svg><span>Help</span></button>
+<nav class="dock" aria-label="Fullscreen controls">
+  <button type="button" data-action="home" title="Home"><svg viewBox="0 0 16 16"><path d="M2.5 8 8 3.5 13.5 8M4.5 6.5V13h7V6.5M6.8 13V9.5h2.4V13"/></svg><span>Home</span></button>
+  <button type="button" data-action="guide" title="Walkthrough"><svg viewBox="0 0 16 16"><path d="M2.5 4C4 3.2 6 3.2 8 4.5c2-1.3 4-1.3 5.5-.5v8.5c-1.5-.8-3.5-.8-5.5.5-2-1.3-4-1.3-5.5-.5z"/><path d="M8 4.5V13"/></svg><span>Walkthrough</span></button>
+  <button type="button" class="lcd-toggle" aria-pressed="false" title="Screen filter"><svg viewBox="0 0 16 16"><rect x="3" y="2.5" width="10" height="11" rx="1"/><path d="M5.7 5v6M8 5v6M10.3 5v6"/></svg><span>Screen filter</span></button>
+  <button type="button" data-action="help" title="Help"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M6.4 6.4a1.7 1.7 0 1 1 2.3 1.6c-.5.2-.7.5-.7 1v.3M8 11.2h.01"/></svg><span>Help</span></button>
+  <button type="button" data-action="fullscreen" title="Exit fullscreen"><svg viewBox="0 0 16 16"><path d="M6 3v3H3M13 6h-3V3M10 13v-3h3M3 10h3v3"/></svg><span>Exit fullscreen</span></button>
 </nav>
 
 </body>
