@@ -135,9 +135,20 @@ fs.mkdirSync(output, { recursive: true });
     const backup = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
     assert.deepEqual(Object.keys(backup.files).filter(n => n.startsWith('save/')).sort(), Object.keys(saved).map(n => `save/${n}`).sort(),
       'Edition menu backs up the stored saves');
+    // Restore: wipe this browser's saves, load the backup back, and the game sees the same files.
+    await page.evaluate(() => new Promise(r => { const q = indexedDB.deleteDatabase('/saves'); q.onsuccess = q.onerror = q.onblocked = r; }));
+    await page.reload();
+    await page.waitForFunction(() => document.querySelector('#saves-count').textContent === 'No saved games yet');
+    await page.setInputFiles('#restore-file', await download.path());
+    await page.waitForSelector('#notify:not([hidden])');
+    await page.click('#notify-actions button:first-child');
+    await page.waitForFunction(() => document.querySelector('#notify-text').textContent.startsWith('Restored'));
+    await page.click('#notify-actions button');
+    await launch('classic');
+    assert.deepEqual(await saves(), saved, 'Restored backup is the game\'s saves');
     assert.deepEqual(errors, [], 'No runtime errors or browser dialogs');
     assert.deepEqual(errors, [], 'No runtime errors during gameplay or save loading');
-    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons, in-screen walkthrough, Home balloon, fullscreen, stored downloads, save backup from the edition menu');
+    console.log('PASS: launcher, Classic/Remastered menus, gameplay, actual save, reload persistence, cross-edition loading, screen filter, hardware buttons, in-screen walkthrough, Home balloon, fullscreen, stored downloads, save backup and restore from the edition menu');
   } finally {
     await browser.close();
   }

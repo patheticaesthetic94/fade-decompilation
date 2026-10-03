@@ -38,7 +38,8 @@
               <span><b>Remastered</b><small>4× art, outline text and enhanced sound</small><em id="size-remastered"></em></span>
             </button>
             <label class="check"><input type="checkbox" class="lcd-check" id="lcd-launch"><span>Pocket PC screen filter</span></label>
-            <div class="saves"><span id="saves-count">Saved games</span><button type="button" class="link" id="backup" disabled>Download backup</button></div>
+            <div class="saves"><span id="saves-count">Saved games</span><span class="saves-actions"><button type="button" class="link" id="backup" disabled>Back up</button><button type="button" class="link" id="restore">Restore</button></span></div>
+            <input type="file" id="restore-file" accept=".json,application/json" hidden>
             <p class="today-note">Both editions share saved games.</p>
           </div>
           <footer class="cmdbar"><button type="button" data-open="guide">Walkthrough</button><button type="button" data-open="help">Help</button></footer>
@@ -88,7 +89,7 @@
             <p>Recreates a 2001 3.8″ transflective screen: the 240×320 pixel grid with RGB stripes, 65,536 colours, greyish blacks and muted colour, an uneven front light and slow pixel response. In Remastered, the filter shows the game at the original 240×320 resolution. You can switch it on or off at any time, including while playing.</p>
             <h2>Saves</h2>
             <p>Use the game’s Save command. Saves stay in this browser and are shared by both editions. Clearing the site’s data removes them, and private browsing may not keep them.</p>
-            <p><b>Download backup</b> on the Home menu saves a copy of your save files. The player cannot import a backup yet.</p>
+            <p>On the Home menu, <b>Back up</b> downloads a copy of your save files, and <b>Restore</b> loads one back. Restoring replaces every saved game in this browser with the backup’s.</p>
           </article>
           <footer class="cmdbar"><button type="button" data-open="guide">Walkthrough</button><a href="https://github.com/patheticaesthetic94/fade-decompilation" target="_blank" rel="noopener">Source ↗</a></footer>
         </section>

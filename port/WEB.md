@@ -91,9 +91,12 @@ buttons are:
 - **Help**.
 
 The switch on the right edge turns the screen filter on and off, and so does a
-checkbox in Help. The edition menu shows how many games are saved and downloads a
-JSON backup. Without a running game it reads IDBFS's IndexedDB store
-(`/saves`, `FILE_DATA`) directly.
+checkbox in Help. The edition menu shows how many games are saved. **Back up** downloads a JSON
+backup, and **Restore** loads one. Both use IDBFS's IndexedDB store
+(`/saves`, `FILE_DATA`) directly, so no game needs to be running. Restore
+validates the file and confirms in a balloon. It then replaces every `/saves/`
+entry, writing directory and file records with the same schema, modes and Date
+timestamps IDBFS uses, and the engine loads them at its next start.
 
 The walkthrough and help open on the device's own screen, over the launcher or the
 running game. They use the same Pocket PC look: a title bar with an **ok** button, a
@@ -119,7 +122,7 @@ Use the game's Save command. `/saves` is restored from IndexedDB before WinMain
 starts; IDBFS automatically persists closed/written saves and registry settings.
 Both editions use the same store. Allow a moment after saving for the browser to
 finish persisting changes. Clearing browser site data deletes saves; private
-browsing may restrict persistence. The edition menu downloads a JSON backup of all save files. Audio may require a tap on the screen because browsers gate audio behind
+browsing may restrict persistence. The edition menu backs up all save files as JSON and restores such a backup. Audio may require a tap on the screen because browsers gate audio behind
 user gestures.
 
 ## Implementation
@@ -138,7 +141,8 @@ slices of the reassembled pack buffer).
 in Chromium: the launcher, both editions' menus, gameplay, real game saves,
 restoration after reload, loading a Classic save in Remastered, switching the
 filter while playing, the direction pad reaching the game, the in-screen walkthrough, the Home balloon, fullscreen sizing,
-stored downloads on a repeat visit and the edition menu's save backup. Run it locally with:
+stored downloads on a repeat visit and the edition menu's save backup and restore (round-tripped
+through the game). Run it locally with:
 
 ```sh
 npm install --prefix build/web-test playwright@1.63.0

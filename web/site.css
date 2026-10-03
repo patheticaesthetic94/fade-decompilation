@@ -270,6 +270,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---- saved games row and notification balloon ---------------------------------------- */
 .saves { display: flex; align-items: baseline; justify-content: space-between; gap: calc(6 * var(--u)); margin: calc(4 * var(--u)) 0 calc(3 * var(--u)); font-size: calc(9.5 * var(--u)); }
+.saves-actions { display: flex; gap: calc(8 * var(--u)); }
 .link { padding: 0; border: 0; background: none; font: inherit; color: #0000e0; text-decoration: underline; }
 .link:disabled { color: #777; text-decoration: none; cursor: default; }
 .notify {

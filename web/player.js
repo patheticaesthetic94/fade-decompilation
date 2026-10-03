@@ -514,6 +514,73 @@ async function showSaves() {
   backup.disabled = !Object.keys(files).length;
 }
 showSaves();
+// Restore: replaces the IDBFS store with a backup's files. The engine reloads /saves from it at startup.
+const FILE_MODE = 0o100666, DIR_MODE = 0o40777;
+function parseBackup(text) {
+  const data = JSON.parse(text);
+  if (data?.format !== 'fade-saves-v1' || typeof data.files !== 'object' || !data.files) throw new Error();
+  const files = {};
+  for (const [name, bytes] of Object.entries(data.files)) {
+    if (!/^[^/\\].*$/.test(name) || name.split('/').some(part => !part || part === '.' || part === '..')) throw new Error();
+    if (!Array.isArray(bytes) || bytes.length > 4 << 20 || bytes.some(b => !Number.isInteger(b) || b < 0 || b > 255)) throw new Error();
+    files[name] = Uint8Array.from(bytes);
+  }
+  if (!Object.keys(files).length) throw new Error();
+  return files;
+}
+function writeStoredSaves(files) {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('/saves', 21);
+    request.onupgradeneeded = () => {   // first save in this browser: same schema as IDBFS
+      const store = request.result.objectStoreNames.contains('FILE_DATA')
+        ? request.transaction.objectStore('FILE_DATA') : request.result.createObjectStore('FILE_DATA');
+      if (!store.indexNames.contains('timestamp')) store.createIndex('timestamp', 'timestamp', { unique: false });
+    };
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const db = request.result;
+      const tx = db.transaction('FILE_DATA', 'readwrite');
+      const store = tx.objectStore('FILE_DATA');
+      const now = new Date();
+      store.delete(IDBKeyRange.bound('/saves/', '/saves/\uffff'));
+      const dirs = new Set();
+      for (const [name, contents] of Object.entries(files)) {
+        const parts = name.split('/');
+        for (let i = 1; i < parts.length; i++) dirs.add(parts.slice(0, i).join('/'));
+        store.put({ timestamp: now, mode: FILE_MODE, contents }, `/saves/${name}`);
+      }
+      for (const dir of dirs) store.put({ timestamp: now, mode: DIR_MODE }, `/saves/${dir}`);
+      tx.oncomplete = () => { db.close(); resolve(); };
+      tx.onerror = tx.onabort = () => { db.close(); reject(tx.error); };
+    };
+  });
+}
+const restoreFile = $('#restore-file');
+$('#restore').onclick = () => { restoreFile.value = ''; restoreFile.click(); };
+restoreFile.onchange = async () => {
+  const file = restoreFile.files[0];
+  if (!file) return;
+  let files;
+  try { files = parseBackup(await file.text()); } catch {
+    notify('That file is not a Fade save backup.', [['OK', null]]);
+    return;
+  }
+  const count = Object.keys(files).filter(name => name.startsWith('save/')).length;
+  const games = `${count} saved game${count === 1 ? '' : 's'}`;
+  notify(`Replace the saved games in this browser with the ${games} in this backup?`, [
+    ['Restore', async () => {
+      try {
+        await writeStoredSaves(files);
+        await showSaves();
+        notify(`Restored ${games}.`, [['OK', null]]);
+      } catch {
+        notify('The backup could not be restored. Browser storage may be unavailable.', [['OK', null]]);
+      }
+    }],
+    ['Cancel', null],
+  ]);
+};
+
 backup.onclick = async () => {
   const files = await readSaves();
   if (!Object.keys(files).length) return;
