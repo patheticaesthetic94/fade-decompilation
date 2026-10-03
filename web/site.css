@@ -314,7 +314,7 @@ body.fs .dock { display: flex; }
 /* Fullscreen: the device is put away and the panel fills the display at its 3:4 shape. */
 body.fs { background: #000; }
 body.fs .stage { inset: 0; container-type: normal; }
-body.fs .device { position: fixed; inset: 0; width: auto; padding: 0; border-radius: 0; background: #000; box-shadow: none; }
+body.fs .device { position: fixed; inset: 0; width: auto; padding: 0; border-radius: 0; background: #000; box-shadow: none; transform: none; }
 body.fs .device::before, body.fs .device::after, body.fs .device-head, body.fs .wordmark, body.fs .keys { display: none; }
 body.fs .bezel { position: fixed; inset: 0; width: auto; padding: 0; border-radius: 0; background: #000; box-shadow: none;
   display: grid; place-items: center; }
@@ -322,5 +322,16 @@ body.fs .screen { --u: min(calc(100vw / 240), calc(100dvh / 320)); width: calc(2
 body.fs .glass { display: none; }
 body.fs .dock { opacity: 0; }
 body.fs .dock:hover, body.fs .dock:focus-within, body.fs.pointer-active .dock { opacity: 1; }
+/* Phones: the buttons sit centred along the bottom, clear of the status bar, and always show.
+   The game is fitted above them. */
+@media (max-width: 600px), (pointer: coarse) {
+  body.fs .dock {
+    opacity: 1; top: auto; right: auto; left: 50%; transform: translateX(-50%);
+    bottom: calc(env(safe-area-inset-bottom) + 10px);
+  }
+  body.fs .dock span { display: none; }
+  body.fs .bezel { padding-bottom: calc(env(safe-area-inset-bottom) + 58px); padding-top: env(safe-area-inset-top); }
+  body.fs .screen { --u: min(calc(100vw / 240), calc((100dvh - env(safe-area-inset-bottom) - env(safe-area-inset-top) - 58px) / 320)); }
+}
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

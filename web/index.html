@@ -67,21 +67,28 @@
           <header class="navbar"><span class="start"><i></i>Help</span><button type="button" class="ok" data-close aria-label="Close help">ok</button></header>
           <article class="doc" tabindex="-1">
             <h1>Fade</h1>
-            <p>The 2001 Pocket PC adventure by Fade Team, recompiled from the original game to run natively in your browser.</p>
-            <h2>Controls</h2>
+            <p>The 2001 Pocket PC adventure by Fade Team. The original program was decompiled and recompiled to run in your browser, with no emulator.</p>
+            <h2>Playing</h2>
             <ul>
-              <li>Tap the screen to interact. Tap the lower-right arrow to continue text.</li>
-              <li>The direction pad or arrow keys navigate; its centre button (or Enter) is the action button. Z, X and C are the game’s other hardware buttons.</li>
-              <li>The buttons beside the pad are Home (the edition menu), Walkthrough, Fullscreen and Help. The switch on the right edge of the device turns the screen filter on and off (it shows red when on).</li>
-              <li>While this screen or the walkthrough is open, the direction pad scrolls it and the action button closes it.</li>
+              <li>Tap an object or person on the screen, then choose an action from its popup. Everything in the game can be done by tapping.</li>
+              <li>Tap the arrow at the lower right of the text panel to continue text.</li>
+              <li>Up and down on the direction pad (or the arrow keys) scroll the text panel and step through conversations. The game does not use left, right or the centre button.</li>
+            </ul>
+            <h2>Device buttons</h2>
+            <ul>
+              <li><b>Home</b> returns to the edition menu. During a game it asks first, because anything since your last save is lost.</li>
+              <li><b>Walkthrough</b> and <b>Help</b> open on the screen. While one is open, the direction pad scrolls it, and the centre button, Enter or Escape closes it.</li>
+              <li><b>Fullscreen</b> hides the device and enlarges the game. Its buttons appear at the top right when you move the pointer, or along the bottom on a phone.</li>
+              <li>The switch on the right edge of the device turns the screen filter on and off. It shows red when the filter is on.</li>
             </ul>
             <h2>Editions</h2>
-            <p><b>Classic</b> is the game as released. <b>Remastered</b> adds 4× artwork, outline text and enhanced sound, and is a larger download. Both are stored on this device after the first download.</p>
+            <p><b>Classic</b> uses the original 240×320 artwork, bitmap text and sounds. <b>Remastered</b> uses 4× upscaled artwork, outline-font text and enhanced 48 kHz sound, and is a larger download. Your browser keeps each edition after its first download, so later visits start without downloading it again unless the browser clears its storage.</p>
             <h2>Screen filter</h2>
             <label class="check"><input type="checkbox" class="lcd-check"><span>Pocket PC screen filter</span></label>
-            <p>Recreates a 2001 3.8″ transflective panel: the 240×320 pixel grid with RGB stripes, 65,536 colours, raised blacks and a narrow gamut, an uneven front light and slow pixel response. It can be switched on or off while playing, here or with the switch on the device's right edge.</p>
+            <p>Recreates a 2001 3.8″ transflective screen: the 240×320 pixel grid with RGB stripes, 65,536 colours, greyish blacks and muted colour, an uneven front light and slow pixel response. In Remastered, the filter shows the game at the original 240×320 resolution. You can switch it on or off at any time, including while playing.</p>
             <h2>Saves</h2>
-            <p>Use the game’s Save command. Saves stay in this browser and are shared by both editions. Clearing site data removes them, and private browsing may not keep them, so download a backup now and then from the Home menu.</p>
+            <p>Use the game’s Save command. Saves stay in this browser and are shared by both editions. Clearing the site’s data removes them, and private browsing may not keep them.</p>
+            <p><b>Download backup</b> on the Home menu saves a copy of your save files. The player cannot import a backup yet.</p>
           </article>
           <footer class="cmdbar"><button type="button" data-open="guide">Walkthrough</button><a href="https://github.com/patheticaesthetic94/fade-decompilation" target="_blank" rel="noopener">Source ↗</a></footer>
         </section>
@@ -102,7 +109,7 @@
       <div class="dpad" aria-label="Direction pad">
         <button type="button" class="up" data-key="ArrowUp" aria-label="Up"></button>
         <button type="button" class="left" data-key="ArrowLeft" aria-label="Left"></button>
-        <button type="button" class="action" data-key="Enter" aria-label="Action (Enter)"></button>
+        <button type="button" class="action" data-key="Enter" aria-label="Centre button (Enter)"></button>
         <button type="button" class="right" data-key="ArrowRight" aria-label="Right"></button>
         <button type="button" class="down" data-key="ArrowDown" aria-label="Down"></button>
       </div>

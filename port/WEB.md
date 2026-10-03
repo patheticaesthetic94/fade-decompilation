@@ -28,7 +28,7 @@ The engine reads `FADE_EDITION=classic|remastered` before loading media.
 ## Fullscreen
 
 The Fullscreen button puts the device away and scales the 3:4 game to fill the
-display, keeping its shape on a black background. Moving the pointer reveals the dock (Home, Walkthrough, screen filter, Help, exit).
+display, keeping its shape on a black background. A dock offers Home, Walkthrough, screen filter, Help and exit. On desktop it sits at the top right and appears when the pointer moves. On phones and touch screens it is always shown, centred along the bottom and clear of the status bar, and the game is fitted above it.
 Browsers without the Fullscreen API (iPhone Safari) get the same layout inside the
 browser window.
 
@@ -78,7 +78,9 @@ The Pocket PC is drawn in CSS. It is zoomed so that the top of the case (speaker
 LED) and its bottom curve fall outside the window, while the screen, direction pad and buttons stay in
 view. One game pixel is `--u`. Clicking or tapping the screen uses the original game
 coordinates. The direction pad sends the arrow keys and Enter, and the keyboard
-works too (Z, X and C are the game's other hardware buttons). The four front
+works too. The game itself only reads up and down, which scroll the text panel and
+step through dialogue. Left and right only feed its hidden cheat sequences, and it
+ignores the action, A/B/C and Start buttons. The four front
 buttons are:
 
 - **Home** returns to the edition menu. While a game is loaded it first asks in a

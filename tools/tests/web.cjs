@@ -120,6 +120,7 @@ fs.mkdirSync(output, { recursive: true });
     const box = await page.locator('#canvas').boundingBox();
     const view = page.viewportSize();
     assert(Math.abs(Math.min(view.width / 240, view.height / 320) * 320 - box.height) < 2, 'Fullscreen game fills the display');
+    assert(box.y >= 0 && box.y + box.height <= view.height + 1, 'Fullscreen game is entirely on screen');
     assert(!(await page.locator('.keys').isVisible()), 'Fullscreen hides the device');
     await page.screenshot({ path: `${output}/fullscreen.png` });
     await page.click('.dock [data-action="fullscreen"]');
